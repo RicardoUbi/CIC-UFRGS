@@ -11,10 +11,10 @@ Player CreatePlayer(void)
     p.score = 0;
     p.scale = 0.5f;
 
-    p.texture = LoadTexture("src/assets/airplanes/air1.png");
+    p.texture = LoadTexture("src/assets/airplanes/air3.png");
 
-    p.hitbox.width = p.texture.width * p.scale * 0.6f;
-    p.hitbox.height = p.texture.height * p.scale * 0.7f;
+    p.hitbox.width = p.texture.width * p.scale * 0.8f;
+    p.hitbox.height = p.texture.height * p.scale * 0.8f;
     p.hitbox.x = p.pos.x - p.hitbox.width / 2;
     p.hitbox.y = p.pos.y - p.hitbox.height / 2;
 
@@ -55,7 +55,7 @@ void DrawPlayer(Player *p)
     );
 
     // Debug: hitbox
-    // DrawRectangleLines(p->hitbox.x, p->hitbox.y, p->hitbox.width, p->hitbox.height, RED);
+    //DrawRectangleLines(p->hitbox.x, p->hitbox.y, p->hitbox.width, p->hitbox.height, RED);
 }
 
 void DrawHUD(Player *p)
