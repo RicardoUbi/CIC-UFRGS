@@ -1,21 +1,11 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -Iinclude
-LDFLAGS = -lraylib -lm
+SRC = src/main.c $(wildcard src/core/*.c)
+INCLUDES = -I src/includes
+LIBS = -L C:/raylib/lib -lraylib -lopengl32 -lgdi32 -lwinmm
+OUT = river-inf.exe
 
-SRC = $(wildcard src/*.c) $(wildcard engine/*.c)
-OBJ = $(SRC:.c=.o)
-BIN = river-inf
-
-all: $(BIN)
-
-$(BIN): $(OBJ)
-	$(CC) $(OBJ) -o $@ $(LDFLAGS)
-
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+all:
+	$(CC) $(SRC) $(INCLUDES) $(LIBS) -o $(OUT)
 
 clean:
-	rm -f $(OBJ) $(BIN)
-
-run: all
-	./$(BIN)
+	del $(OUT)

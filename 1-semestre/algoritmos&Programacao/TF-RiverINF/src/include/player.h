@@ -13,10 +13,11 @@ typedef struct Player {
     int score;
 } Player;
 
-
 Player CreatePlayer(void);
+void UpdatePlayer(Player *p);
 void DrawPlayer(Player *p);
 void UnloadPlayer(Player *p);
 void UpdatePlayerHitbox(Player *p);
+void DrawHUD(Player *p);
 
 #endif
