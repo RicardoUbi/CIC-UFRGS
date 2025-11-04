@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Compilar Projeto Raylib",
+      "type": "shell",
+      "command": "gcc",
+      "args": [
+        "\"${workspaceFolder}/src/*.c\"",
+        "-o",
+        "\"${workspaceFolder}/src/main.exe\"",
+        "-I", "\"C:/raylib/include\"",
+        "-L", "\"C:/raylib/lib\"",
+        "-lraylib",
+        "-lopengl32",
+        "-lgdi32",
+        "-lwinmm"
+      ],
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"]
+    }
+  ]
+}
