@@ -1,11 +1,11 @@
 #include "player.h"
-
-#define PLAYER_SPEED 5
+#include "game.h"  // Adicionado para SCREEN_WIDTH
+#include "defines.h"  // Adicionado
 
 Player CreatePlayer(void)
 {
     Player p = {0};
-    p.pos = (Vector2){240, 640};
+    p.pos = (Vector2){SCREEN_WIDTH / 2, SCREEN_HEIGHT - 80};  // Centralizado
     p.fuel = 100;
     p.lives = 3;
     p.score = 0;
@@ -29,14 +29,17 @@ void UpdatePlayerHitbox(Player *p)
 
 void UpdatePlayer(Player *p)
 {
-    if (IsKeyDown(KEY_LEFT) && p->pos.x > 80)
+    int margin = 5 * TILE_SIZE; // 5 tiles de margem (100 pixels se TILE_SIZE=20)
+    
+    if (IsKeyDown(KEY_LEFT) && p->pos.x > margin + p->hitbox.width/2)
         p->pos.x -= PLAYER_SPEED;
-    if (IsKeyDown(KEY_RIGHT) && p->pos.x < 480 - 80)
+    if (IsKeyDown(KEY_RIGHT) && p->pos.x < SCREEN_WIDTH - margin - p->hitbox.width/2)
         p->pos.x += PLAYER_SPEED;
 
     UpdatePlayerHitbox(p);
 
-    p->fuel -= 0.1f;
+    // Combustível ainda mais lento
+    p->fuel -= 0.015f;
     if (p->fuel <= 0)
     {
         p->lives--;
@@ -54,13 +57,13 @@ void DrawPlayer(Player *p)
         WHITE
     );
 
-    // Debug: hitbox
-    //DrawRectangleLines(p->hitbox.x, p->hitbox.y, p->hitbox.width, p->hitbox.height, RED);
+    // Debug: hitbox (descomente se necessário)
+    // DrawRectangleLines(p->hitbox.x, p->hitbox.y, p->hitbox.width, p->hitbox.height, RED);
 }
 
 void DrawHUD(Player *p)
 {
-    DrawRectangle(0, 0, 480, 40, (Color){0, 0, 0, 150});
+    DrawRectangle(0, 0, SCREEN_WIDTH, 40, (Color){0, 0, 0, 150});
     DrawText(TextFormat("Fuel: %.0f", p->fuel), 20, 10, 20, RAYWHITE);
     DrawText(TextFormat("Lives: %d", p->lives), 180, 10, 20, RAYWHITE);
     DrawText(TextFormat("Score: %d", p->score), 320, 10, 20, RAYWHITE);

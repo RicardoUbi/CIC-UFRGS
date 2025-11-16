@@ -3,6 +3,7 @@
 
 int main(void)
 {
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "RIVER-INF - Ricardo 598925");
     InitAudioDevice();
     SetTargetFPS(60);
@@ -12,7 +13,11 @@ int main(void)
     while (!WindowShouldClose())
     {
         UpdateGame(&game);
+        
+        BeginDrawing();
+        ClearBackground(BLACK);
         DrawGame(&game);
+        EndDrawing();
     }
 
     UnloadGame(&game);

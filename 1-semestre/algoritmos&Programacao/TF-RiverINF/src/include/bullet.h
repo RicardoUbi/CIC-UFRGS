@@ -2,9 +2,7 @@
 #define BULLET_H
 #include "raylib.h"
 #include "player.h"
-
-#define MAX_BULLETS 10
-#define BULLET_SPEED 10
+#include "defines.h"
 
 typedef struct {
     Vector2 pos;

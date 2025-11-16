@@ -3,17 +3,14 @@
 
 #include "raylib.h"
 #include <stdbool.h>
-
-#define MAP_ROWS 20
-#define MAP_COLS 24
-#define TILE_SIZE 40
+#include "defines.h" 
 
 typedef struct {
     char data[MAP_ROWS][MAP_COLS];
 } Map;
 
 Map LoadMap(const char *filename);
-void DrawMap(Map *map);
+void DrawMap(Map *map, float offsetY);
 void UnloadMap(Map *map);
 
 #endif
