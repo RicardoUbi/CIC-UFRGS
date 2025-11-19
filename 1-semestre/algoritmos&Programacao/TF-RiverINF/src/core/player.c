@@ -9,7 +9,7 @@ Player CreatePlayer(void)
     p.fuel = 100;
     p.lives = 3;
     p.score = 0;
-    p.scale = 0.5f;
+    p.scale = 0.3f;
 
     p.texture = LoadTexture("src/assets/airplanes/air3.png");
 

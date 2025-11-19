@@ -12,7 +12,7 @@ Game InitGame(void)
 
     game.gameRender = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    game.cameraY = 0;
+    game.cameraY = WORLD_HEIGHT - SCREEN_HEIGHT; 
     game.currentLevel = 1;
     game.levelCompleted = false;
     game.obstacleCount = 0;
@@ -25,6 +25,9 @@ Game InitGame(void)
 
     game.player = CreatePlayer();
 
+    game.player.pos = (Vector2){SCREEN_WIDTH / 2, SCREEN_HEIGHT - 80};
+    UpdatePlayerHitbox(&game.player);
+
     CreateObstaclesFromMap(&game);
 
     for (int i = 0; i < MAX_BULLETS; i++)
@@ -35,6 +38,9 @@ Game InitGame(void)
 
     printf("=== JOGO INICIADO ===\n");
     printf("Level: %d\n", game.currentLevel);
+    printf("CameraY inicial: %.1f\n", game.cameraY);
+    printf("World Height: %d, Screen Height: %d\n", WORLD_HEIGHT, SCREEN_HEIGHT);
+    printf("Player position: (%.1f, %.1f)\n", game.player.pos.x, game.player.pos.y);
     printf("Obstáculos criados: %d\n", game.obstacleCount);
     printf("Player: %d vidas, %.0f combustível\n", game.player.lives, game.player.fuel);
 
@@ -102,7 +108,6 @@ void UpdateGame(Game *game)
 
     if (game->levelCompleted)
     {
-        game->cameraY = WORLD_HEIGHT - SCREEN_HEIGHT;
         game->levelTransitionTimer += GetFrameTime();
         if (game->levelTransitionTimer >= 2.0f) // 2 segundos
         {
@@ -118,10 +123,23 @@ void UpdateGame(Game *game)
     if (!game->levelCompleted && !game->gameOver)
     {
         game->cameraY -= SCROLL_SPEED;
+
+        float minCameraY = -(WORLD_HEIGHT - SCREEN_HEIGHT);
         
-        if (game->cameraY >= WORLD_HEIGHT - SCREEN_HEIGHT)
+        if (game->cameraY <= minCameraY)
         {
-            game->cameraY = WORLD_HEIGHT - SCREEN_HEIGHT;
+            game->cameraY = minCameraY;
+            game->levelCompleted = true;
+        }
+        if (game->debugMode && (int)game->cameraY % 60 == 0) {
+            float maxScroll = WORLD_HEIGHT - SCREEN_HEIGHT;
+            float currentScroll = maxScroll - game->cameraY;
+            float progress = (currentScroll / maxScroll) * 100;
+            
+            if (progress < 0) progress = 0;
+            if (progress > 100) progress = 100;
+            
+            printf("Progresso do level: %.1f%% (CameraY: %.1f)\n", progress, game->cameraY);
         }
     }
 
@@ -165,10 +183,10 @@ void LoadNextLevel(Game *game)
         fclose(file);
         game->map = LoadMap(filename);
         game->levelCompleted = false;
+        game->cameraY = WORLD_HEIGHT - SCREEN_HEIGHT;
         game->bgOffset = 0;
 
         // Reposicionar jogador
-        game->cameraY = 0;
         game->player.pos = (Vector2){SCREEN_WIDTH / 2, SCREEN_HEIGHT - 80};
         UpdatePlayerHitbox(&game->player);
 
@@ -176,14 +194,15 @@ void LoadNextLevel(Game *game)
         CreateObstaclesFromMap(game);
 
         printf("=== LEVEL %d CARREGADO ===\n", game->currentLevel);
+        printf("CameraY: %.1f\n", game->cameraY);
+        printf("Player position: (%.1f, %.1f)\n", game->player.pos.x, game->player.pos.y);
         printf("Obstáculos ativos: %d\n", game->obstacleCount);
     }
     else
     {
         printf("Não há mais fases. Vitória!\n");
-        // Em vez de game over, podemos mostrar tela de vitória
         game->gameOver = true;
-        // Você pode adicionar uma tela de vitória aqui depois
+        // TODO: Adicionar tela de vitória aqui depois
     }
 }
 
