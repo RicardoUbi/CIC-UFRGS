@@ -50,16 +50,18 @@ Map LoadMap(const char *filename)
 void DrawMap(Map *map, float cameraY)
 {
     // Calcular quais linhas do mapa estão visíveis
-    int startRow = (int)(cameraY / TILE_SIZE);
+    int startRow = (int)(-cameraY / TILE_SIZE);
+    if (startRow < 0) startRow = 0;
     int endRow = startRow + (SCREEN_HEIGHT / TILE_SIZE) + 2;
+    if (endRow > MAP_ROWS) endRow = MAP_ROWS;
     
-    for (int row = startRow; row < endRow && row < MAP_ROWS; row++)
+    for (int row = startRow; row < endRow; row++)
     {
         for (int col = 0; col < MAP_COLS; col++)
         {
             char cell = map->data[row][col];
             int x = col * TILE_SIZE;
-            int y = row * TILE_SIZE - cameraY;
+            float y = row * TILE_SIZE - cameraY;
 
             // Só desenhar se estiver dentro da tela
             if (y >= -TILE_SIZE && y < SCREEN_HEIGHT)
@@ -67,19 +69,19 @@ void DrawMap(Map *map, float cameraY)
                 switch (cell)
                 {
                     case 'T': 
-                        DrawRectangle(x, y, TILE_SIZE, TILE_SIZE, GREEN); 
+                        DrawRectangle(x, (int)y, TILE_SIZE, TILE_SIZE, GREEN); 
                         break;
                     case 'N': 
-                        DrawRectangle(x, y, TILE_SIZE, TILE_SIZE, RED); 
+                        DrawRectangle(x, (int)y, TILE_SIZE, TILE_SIZE, RED); 
                         break;
                     case 'X': 
-                        DrawRectangle(x, y, TILE_SIZE, TILE_SIZE, MAROON); 
+                        DrawRectangle(x, (int)y, TILE_SIZE, TILE_SIZE, MAROON); 
                         break;
                     case 'G': 
-                        DrawRectangle(x, y, TILE_SIZE, TILE_SIZE, YELLOW); 
+                        DrawRectangle(x, (int)y, TILE_SIZE, TILE_SIZE, YELLOW); 
                         break;
                     case 'P': 
-                        DrawRectangle(x, y, TILE_SIZE, TILE_SIZE, GRAY); 
+                        DrawRectangle(x, (int)y, TILE_SIZE, TILE_SIZE, GRAY); 
                         break;
                     default:  
                         break; // Espaço vazio (rio) - já desenhado pelo background

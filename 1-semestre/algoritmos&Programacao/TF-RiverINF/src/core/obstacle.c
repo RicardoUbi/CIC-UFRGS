@@ -64,29 +64,29 @@ void UpdateObstacles(Obstacle obstacles[], int obstacleCount, Bullet bullets[], 
             TILE_SIZE
         };
 
-        if (screenY >= 0 && screenY <= SCREEN_HEIGHT - TILE_SIZE)
-        {
-        if (CheckCollisionRecs(obsRect, player->hitbox))
-            {
-                printf("Colisão com obstáculo tipo %d em (%d, %d)\n", 
-                       obstacles[i].type, 
-                       (int)obstacles[i].worldPos.x / TILE_SIZE, 
-                       (int)obstacles[i].worldPos.y / TILE_SIZE);
+        // if (screenY >= 0 && screenY <= SCREEN_HEIGHT - TILE_SIZE)
+        // {
+        // if (CheckCollisionRecs(obsRect, player->hitbox))
+        //     {
+        //         printf("Colisão com obstáculo tipo %d em (%d, %d)\n", 
+        //                obstacles[i].type, 
+        //                (int)obstacles[i].worldPos.x / TILE_SIZE, 
+        //                (int)obstacles[i].worldPos.y / TILE_SIZE);
 
-                if (obstacles[i].type == OBSTACLE_FUEL)
-                {
-                    player->fuel = 100;
-                    printf("Combustível reabastecido!\n");
-                    obstacles[i].active = false;
-                }
-                else if (obstacles[i].type != OBSTACLE_BRIDGE)
-                {
-                    player->lives--;
-                    printf("Vida perdida! Vidas restantes: %d\n", player->lives);
-                    obstacles[i].active = false;
-                }
-            }
-        }
+        //         if (obstacles[i].type == OBSTACLE_FUEL)
+        //         {
+        //             player->fuel = 100;
+        //             printf("Combustível reabastecido!\n");
+        //             obstacles[i].active = false;
+        //         }
+        //         else if (obstacles[i].type != OBSTACLE_BRIDGE)
+        //         {
+        //             player->lives--;
+        //             printf("Vida perdida! Vidas restantes: %d\n", player->lives);
+        //             obstacles[i].active = false;
+        //         }
+        //     }
+        // }
 
         for (int j = 0; j < MAX_BULLETS; j++)
         {
