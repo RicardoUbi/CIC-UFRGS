@@ -1,42 +1,35 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "raylib.h"
+#include "defines.h"
 #include "player.h"
 #include "bullet.h"
 #include "obstacle.h"
-#include "background.h"
 #include "map.h"
-#include "defines.h"
+#include "highscore.h"
 
-#define SCREEN_WIDTH BASE_WIDTH
-#define SCREEN_HEIGHT BASE_HEIGHT
 #define TOTAL_LEVELS 5
 
-typedef struct Game
-{
-    Player player;
-    Bullet bullets[MAX_BULLETS];
-    Obstacle obstacles[MAX_OBSTACLES];
-    float bgOffset;
-    float cameraY;
-    bool gameOver;
-    int currentLevel;
-    bool levelCompleted;
-    int obstacleCount;
-    bool debugMode;
-    float levelTransitionTimer;
-    bool nextLevelLoaded;
-    RenderTexture2D gameRender;
-    Map levels[TOTAL_LEVELS];
+typedef struct {
+    GameState currentState;                    // Estado atual do jogo
+    int score;                                 // Pontuação do jogador
+    int gameWon;                               // Se ganhou todas as fases
+    int currentLevel;                          // Número da fase atual
+    int totalLevels;                           // Número total de fases
+    int isCustomLevel;                         // Se é um mapa personalizado
+    char customLevelFile[100];                 // Nome do arquivo do mapa personalizado
+    Player player;                             // Jogador
+    Map map;                                   // Mapa
+    HighScoreEntry highScores[MAX_HIGHSCORES]; // Highscores
 } Game;
 
-
-Game InitGame(void);
+// Funções de jogo
+void InitGame(Game *game);
 void UpdateGame(Game *game);
 void DrawGame(Game *game);
-void UnloadGame(Game *game);
+void ChangeState(Game *game, GameState newState);
+void ResetGame(Game *game);
 void LoadNextLevel(Game *game);
-void CreateObstaclesFromMap(Game *game);
+void IsHighScore(Game *game);
 
 #endif

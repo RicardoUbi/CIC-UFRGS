@@ -1,22 +1,48 @@
-#ifndef DEFINES_H
-#define DEFINES_H
-
-// Tamanho base do jogo (resolução lógica)
-#define BASE_WIDTH 780
-#define BASE_HEIGHT 640
-
+// Tela
+#define SCREEN_WIDTH 960
+#define SCREEN_HEIGHT 800
 #define TILE_SIZE 40
 
-// Mapas 24x20 (colunas x linhas)
+// Mapa
 #define MAP_COLS 24
-#define MAP_ROWS 20
+#define MAP_MAX_ROWS 1000
 
-// Velocidades
-#define SCROLL_SPEED 1.0f
-#define PLAYER_SPEED 5
-#define BULLET_SPEED 12
-#define MAX_BULLETS 20 
+// Jogador e inimigos
+#define MAX_ENEMIES 100
+#define MAX_BULLETS 10
+#define MAX_HIGHSCORES 10
 
-#define WORLD_HEIGHT (MAP_ROWS * TILE_SIZE)
+// Arquivo
+#define HIGHSCORE_FILE "highscore.bin"
 
-#endif
+// Estados de jogo
+typedef enum
+{
+    MENU,           // Menu
+    GAMEPLAY,       // Jogo em andamento
+    GAME_OVER,      // Derrota
+    VICTORY,        // Vitoria
+    CUSTOM_LEVEL,   // Fase personalizada
+    NAME_INPUT,     // Entrada de nome
+    HIGHSCORE,      // Highscores
+} GameState;
+
+// Estruturas base
+typedef struct
+{
+    float x, y;     // Posição no mapa
+    int active;     // Ativo ou inativo
+} Bullet;
+
+typedef struct
+{
+    float x, y;     // Posição no mapa
+    char type;      // Tipo de entidade: 'T' (Terra), 'N' (Navio), 'X' (Helicoptero), 'G' (Gasolina), 'P' (Ponte)
+    int active;     // Ativo ou inativo
+} Entity;
+
+typedef struct
+{
+    char name[20];  // Nome
+    int score;      // Pontuação
+} HighScoreEntry;

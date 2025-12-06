@@ -1,23 +1,21 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "raylib.h"
+#include "defines.h"
 
-typedef struct Player {
-    Vector2 pos;
-    Texture2D texture;
-    float scale;
-    Rectangle hitbox;
-    float fuel;
-    int lives;
-    int score;
+typedef struct {
+    float x, y; // Posição do jogador
+    float fuel; // Combustível do jogador
+    int active; // Se o jogador estiver ativo (Vivo)
+    int score;  // Pontuação do jogador
 } Player;
 
-Player CreatePlayer(void);
-void UpdatePlayer(Player *p);
-void DrawPlayer(Player *p);
-void UnloadPlayer(Player *p);
-void UpdatePlayerHitbox(Player *p);
-void DrawHUD(Player *p);
+void InitPlayer(Player *player);
+void UpdatePlayer(Player *player);
+void DrawPlayer(const Player *player);
+void MovePlayer(Player *player);
+void ConsumeFuel(Player *player, float amount);
+void Refuel(Player *player, float amount);
+int CheckPlayerCollision(const Player *player, float objX, float objY, float objWidth, float objHeight);
 
 #endif

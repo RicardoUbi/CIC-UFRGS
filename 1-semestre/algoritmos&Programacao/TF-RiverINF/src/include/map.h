@@ -1,16 +1,22 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "raylib.h"
-#include <stdbool.h>
 #include "defines.h" 
 
 typedef struct {
-    char data[MAP_ROWS][MAP_COLS];
+    char data[MAP_MAX_ROWS][MAP_COLS]; // Array 2D para armazenar os dados do mapa
+    int height;                        // Altura do mapa
+    float scrollY;                     // Deslocamento vertical
+    float scrollSpeed;                 // Velocidade de deslocamento
 } Map;
 
-Map LoadMap(const char *filename);
-void DrawMap(Map *map, float offsetY);
-void UnloadMap(Map *map);
+void LoadMap(Map *map, const char *filename);
+void LoadMapFromFile(Map *map, const char *filename);
+void UpdateMapScroll(Map *map);
+void DrawMap(const Map *map);
+void DrawMapTiles(const Map *map);
+int IsMapPositionSolid(const Map *map, float x, float y);
+void GetMapIndices(const Map *map, float worldX, float worldY, int *outGridX, int *outGridY);
+int ValidateMapFile(const char *filename);
 
 #endif
