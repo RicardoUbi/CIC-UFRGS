@@ -1,3 +1,5 @@
+#ifndef DEFINES_H      // ← GUARDA DE INCLUSÃO
+#define DEFINES_H
 // Tela
 #define SCREEN_WIDTH 960
 #define SCREEN_HEIGHT 800
@@ -5,9 +7,12 @@
 
 // Mapa
 #define MAP_COLS 24
-#define MAP_MAX_ROWS 1000
+#define MAP_ROWS 20
 
 // Jogador e inimigos
+#define MAX_SKINS 5
+#define PLAYER_SCALE 0.3f
+#define HITBOX_SCALE 0.8f
 #define MAX_ENEMIES 100
 #define MAX_BULLETS 10
 #define MAX_HIGHSCORES 10
@@ -19,7 +24,7 @@
 typedef enum
 {
     MENU,           // Menu
-    GAMEPLAY,       // Jogo em andamento
+    GAMEPLAY,       // Jogo em campanha
     GAME_OVER,      // Derrota
     VICTORY,        // Vitoria
     CUSTOM_LEVEL,   // Fase personalizada
@@ -28,12 +33,6 @@ typedef enum
 } GameState;
 
 // Estruturas base
-typedef struct
-{
-    float x, y;     // Posição no mapa
-    int active;     // Ativo ou inativo
-} Bullet;
-
 typedef struct
 {
     float x, y;     // Posição no mapa
@@ -46,3 +45,5 @@ typedef struct
     char name[20];  // Nome
     int score;      // Pontuação
 } HighScoreEntry;
+
+#endif

@@ -25,3 +25,5 @@ int main(void)
     CloseWindow();
     return 0;
 }
+
+// ao criar o mapa, adicionar isso antes: ClearBackground(BLUE); 

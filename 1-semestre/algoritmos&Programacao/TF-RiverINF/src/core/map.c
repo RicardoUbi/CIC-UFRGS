@@ -1,96 +1,155 @@
 #include "map.h"
+#include "raylib.h"
 #include <stdio.h>
 #include <string.h>
-#include "game.h"
+#include <stdlib.h>
 
-Map LoadMap(const char *filename)
+void LoadMap(Map *map, const char *filename)
 {
-    Map map = {0};
-    FILE *file = fopen(filename, "r");
+    map->height = 0;
+    map->scrollY = 0.0f;
+    map->scrollSpeed = 2.0f;
 
-    if (!file) {
-        printf("Erro ao carregar mapa: %s. Gerando mapa padrão...\n", filename);
-        for (int row = 0; row < MAP_ROWS; row++) {
-            for (int col = 0; col < MAP_COLS; col++) {
-                if (col < 5 || col >= MAP_COLS - 5)
-                    map.data[row][col] = 'T';
-                else
-                    map.data[row][col] = ' ';
+    FILE *f = fopen(filename, "r");
+    if (!f)
+    {
+        printf("Erro ao abrir %s. Criando mapa vazio.\n", filename);
+        for (int y = 0; y < MAP_ROWS; y++)
+        {
+            for (int x = 0; x < MAP_COLS; x++)
+            {
+                map->data[y][x] = ' ';
             }
         }
-        return map;
+        map->height = MAP_ROWS;
+        return;
     }
 
     char line[256];
-    int row = 0;
-    while (row < MAP_ROWS && fgets(line, sizeof(line), file)) {
-        int len = strlen(line);
-        for (int col = 0; col < MAP_COLS; col++) {
-            if (col < len && line[col] != '\n' && line[col] != '\r')
-                map.data[row][col] = line[col];
+    int lineCount = 0;
+
+    while (fgets(line, sizeof(line), f) && lineCount < MAP_ROWS)
+    {
+        size_t len = strlen(line);
+
+        if (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'))
+        {
+            line[len - 1] = '\0';
+            len--;
+        }
+
+        for (int x = 0; x < MAP_COLS; x++)
+        {
+            if (x < len && line[x] != '\0')
+            {
+                map->data[lineCount][x] = line[x];
+            }
             else
-                map.data[row][col] = ' '; // completa linha curta com rio
+            {
+                map->data[lineCount][x] = ' ';
+            }
         }
-        row++;
+        lineCount++;
     }
-
-    // Caso o arquivo tenha menos linhas que MAP_ROWS
-    for (; row < MAP_ROWS; row++) {
-        for (int col = 0; col < MAP_COLS; col++) {
-            map.data[row][col] = ' ';
-        }
-    }
-
-    fclose(file);
-    printf("Mapa carregado com sucesso: %s\n", filename);
-    return map;
+    map->height = lineCount;
+    fclose(f);
+    printf("Mapa '%s' carregado: %d linhas\n", filename, map->height);
 }
 
-
-void DrawMap(Map *map, float cameraY)
+void UpdateMapScroll(Map *map)
 {
-    // Calcular quais linhas do mapa estão visíveis
-    int startRow = (int)(-cameraY / TILE_SIZE);
-    if (startRow < 0) startRow = 0;
-    int endRow = startRow + (SCREEN_HEIGHT / TILE_SIZE) + 2;
-    if (endRow > MAP_ROWS) endRow = MAP_ROWS;
-    
-    for (int row = startRow; row < endRow; row++)
-    {
-        for (int col = 0; col < MAP_COLS; col++)
-        {
-            char cell = map->data[row][col];
-            int x = col * TILE_SIZE;
-            float y = row * TILE_SIZE - cameraY;
+    map->scrollY -= map->scrollSpeed;
+}
 
-            // Só desenhar se estiver dentro da tela
-            if (y >= -TILE_SIZE && y < SCREEN_HEIGHT)
+void DrawMap(const Map *map)
+{
+    int startY = (int)(map->scrollY / TILE_SIZE);
+    int endY = startY + (SCREEN_HEIGHT / TILE_SIZE) + 1;
+
+    if (endY > map->height)
+        endY = map->height;
+
+    for (int y = startY; y < endY; y++)
+    {
+        for (int x = 0; x < MAP_COLS; x++)
+        {
+            char tile = map->data[y][x];
+
+            if (tile == 'T')
             {
-                switch (cell)
-                {
-                    case 'T': 
-                        DrawRectangle(x, (int)y, TILE_SIZE, TILE_SIZE, GREEN); 
-                        break;
-                    case 'N': 
-                        DrawRectangle(x, (int)y, TILE_SIZE, TILE_SIZE, RED); 
-                        break;
-                    case 'X': 
-                        DrawRectangle(x, (int)y, TILE_SIZE, TILE_SIZE, MAROON); 
-                        break;
-                    case 'G': 
-                        DrawRectangle(x, (int)y, TILE_SIZE, TILE_SIZE, YELLOW); 
-                        break;
-                    case 'P': 
-                        DrawRectangle(x, (int)y, TILE_SIZE, TILE_SIZE, GRAY); 
-                        break;
-                    default:  
-                        break; // Espaço vazio (rio) - já desenhado pelo background
-                }
+                float screenY = (y * TILE_SIZE) - map->scrollY;
+                DrawRectangle(x * TILE_SIZE, screenY,
+                              TILE_SIZE, TILE_SIZE, GREEN);
             }
         }
     }
 }
 
-void UnloadMap(Map *map) {
-    // Nada a liberar ainda, mas evita erro de linkagem
+int IsMapPositionSolid(const Map *map, int gridX, int gridY)
+{
+    // Converte coordenadas de mundo para grid
+    if (gridX < 0 || gridX >= MAP_COLS || gridY < 0 || gridY >= map->height)
+    {
+        return 0; // Fora do mapa não é sólido
+    }
+
+    char tile = map->data[gridY][gridX];
+
+    return tile == 'T';
+}
+
+void GetMapIndices(const Map *map, float worldX, float worldY, int *outGridX, int *outGridY)
+{
+    *outGridX = (int)(worldX / TILE_SIZE);
+
+    float worldYInMap = worldY + map->scrollY;
+    *outGridY = (int)(worldYInMap / TILE_SIZE);
+}
+
+int ValidateMapFile(const char *filename)
+{
+    FILE *f = fopen(filename, "r");
+    if (!f)
+        return 0;
+
+    char line[256];
+    int lineCount = 0;
+    int valid = 1;
+
+    while (fgets(line, sizeof(line), f) && lineCount < MAP_ROWS)
+    {
+        size_t len = strlen(line);
+        if (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'))
+        {
+            line[len - 1] = '\0';
+            len--;
+        }
+
+        if (len != MAP_COLS)
+        {
+            valid = 0;
+            break;
+        }
+        for (int i = 0; i < 5; i++)
+        {
+            if (line[i] != 'T' || line[MAP_COLS - 1 - i] != 'T')
+            {
+                valid = 0;
+                break;
+            }
+        }
+
+        if (!valid)
+        {
+            break;
+        }
+        lineCount++;
+    }
+
+    fclose(f);
+
+    if (lineCount < 20)
+        valid = 0;
+
+    return valid;
 }
