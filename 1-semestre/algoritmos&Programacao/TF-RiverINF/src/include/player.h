@@ -34,7 +34,7 @@ void Refuel(Player *player, float amount);
 
 // Colisão
 int CheckPlayerCollision(const Player *player, float objX, float objY, float objWidth, float objHeight);
-Rectangle GetPlayerHitbox(const Player *player);
+Rectangle GetPlayerHitbox(const Player *player); // implementar, não existe no contexto
 
 // Sistema de skins
 void ChangePlayerSkin(Player *player, int skinIndex);

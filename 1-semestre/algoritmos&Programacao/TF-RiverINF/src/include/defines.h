@@ -13,7 +13,7 @@
 #define MAX_SKINS 5
 #define PLAYER_SCALE 0.3f
 #define HITBOX_SCALE 0.8f
-#define MAX_ENEMIES 100
+#define MAX_ENEMIES (20*24)
 #define MAX_BULLETS 10
 #define MAX_HIGHSCORES 10
 

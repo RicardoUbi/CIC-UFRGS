@@ -21,6 +21,13 @@ river-inf.exe: $(SRC_DIR)/main.c \
 	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)
 	@echo Jogo compilado: river-inf.exe
 
+# TESTE DE OBSTÁCULO
+test-obstacle: $(TESTS_DIR)/test_obstacle.c $(CORE_DIR)/obstacle.c $(CORE_DIR)/bullet.c $(CORE_DIR)/player.c $(CORE_DIR)/map.c
+	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)
+	@echo Teste de Obstáculos compilado!
+	@echo Executando teste do sistema de obstáculos...
+	./test-obstacle.exe	
+
 # TESTE DE TIRO
 test-bullet: $(TESTS_DIR)/test_bullet.c $(CORE_DIR)/bullet.c $(CORE_DIR)/player.c $(CORE_DIR)/map.c
 	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)

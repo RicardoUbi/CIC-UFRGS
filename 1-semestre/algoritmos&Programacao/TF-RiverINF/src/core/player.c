@@ -272,3 +272,31 @@ int PlayerIsInvincible(const Player *player)
 {
     return player->invincible;
 }
+
+Rectangle GetPlayerHitbox(const Player *player)
+{
+    if (!player)
+        return (Rectangle){0, 0, 0, 0};
+    
+    // Se o jogador não está ativo, retorna hitbox vazia
+    if (!player->active)
+        return (Rectangle){0, 0, 0, 0};
+    
+    // Se tem textura carregada, usa a hitbox calculada
+    if (player->texture.id != 0)
+    {
+        return player->hitbox;
+    }
+    else
+    {
+        // Fallback seguro
+        float width = 30.0f * player->scale;
+        float height = 30.0f * player->scale;
+        return (Rectangle){
+            player->x - width/2,
+            player->y - height/2,
+            width,
+            height
+        };
+    }
+}
