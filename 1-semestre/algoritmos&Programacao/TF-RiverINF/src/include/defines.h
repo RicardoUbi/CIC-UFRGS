@@ -10,7 +10,7 @@
 #define MAP_ROWS 20
 
 // Jogador e inimigos
-#define MAX_SKINS 5
+#define MAX_SKINS 3
 #define PLAYER_SCALE 0.3f
 #define HITBOX_SCALE 0.8f
 #define MAX_ENEMIES (20*24)

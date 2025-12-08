@@ -21,6 +21,13 @@ river-inf.exe: $(SRC_DIR)/main.c \
 	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)
 	@echo Jogo compilado: river-inf.exe
 
+# TESTE DE HIGHSCORE
+test-highscore:$(TESTS_DIR)/test_highscore.c $(CORE_DIR)/highscore.c
+	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)
+	@echo Teste de Highscore compilado!
+	@echo Executando teste do módulo Highscore...
+	./test-highscore.exe
+
 # TESTE DE OBSTÁCULO
 test-obstacle: $(TESTS_DIR)/test_obstacle.c $(CORE_DIR)/obstacle.c $(CORE_DIR)/bullet.c $(CORE_DIR)/player.c $(CORE_DIR)/map.c
 	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)

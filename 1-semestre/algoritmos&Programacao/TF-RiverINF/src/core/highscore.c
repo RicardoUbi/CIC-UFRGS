@@ -1,60 +1,121 @@
 #include "highscore.h"
+#include "game.h"
 #include <stdio.h>
 #include <string.h>
 
-void LoadHighscores(Highscore highscores[])
+static int IsValidEntry(const HighScoreEntry *e)
 {
-    FILE *file = fopen("highscore.bin", "rb");
-    if (file)
-    {
-        fread(highscores, sizeof(Highscore), MAX_HIGHSCORES, file);
-        fclose(file);
-    }
-    else
-    {
-        // Inicializa com valores padrão
-        for (int i = 0; i < MAX_HIGHSCORES; i++)
-        {
-            sprintf(highscores[i].name, "Player");
-            highscores[i].score = 1000 - (i * 100);
-        }
-    }
+    if (!e) return 0;
+
+    if (e->score < 0 || e->score > 100000000)
+        return 0;
+
+    if (strlen(e->name) == 0 || strlen(e->name) >= MAX_NAME_LENGTH)
+        return 0;
+
+    return 1;
 }
 
-void SaveHighscores(Highscore highscores[])
+void ResetHighScores(HighScoreEntry *highScores)
 {
-    FILE *file = fopen("highscore.bin", "wb");
-    if (file)
-    {
-        fwrite(highscores, sizeof(Highscore), MAX_HIGHSCORES, file);
-        fclose(file);
-    }
-}
+    if (!highScores) return;
 
-void AddHighscore(Highscore highscores[], int score, const char *name)
-{
-    int pos = -1;
     for (int i = 0; i < MAX_HIGHSCORES; i++)
     {
-        if (score > highscores[i].score)
-        {
-            pos = i;
-            break;
-        }
+        strcpy(highScores[i].name, "----------");
+        highScores[i].score = 0;
     }
 
-    if (pos != -1)
-    {
-        for (int i = MAX_HIGHSCORES - 1; i > pos; i--)
-        {
-            highscores[i] = highscores[i - 1];
-        }
-        strcpy(highscores[pos].name, name);
-        highscores[pos].score = score;
-    }
+    printf("Highscores resetados (zerados)\n");
 }
 
-int CheckHighscore(Highscore highscores[], int score)
+void LoadHighScores(HighScoreEntry *highScores)
 {
-    return score > highscores[MAX_HIGHSCORES - 1].score;
+    if (!highScores) return;
+
+    FILE *file = fopen(HIGHSCORE_FILE, "rb");
+    if (!file)
+    {
+        printf("Arquivo de highscore não existe, criando novo\n");
+        ResetHighScores(highScores);
+        SaveHighScores(highScores);
+        return;
+    }
+
+    size_t read = fread(highScores, sizeof(HighScoreEntry), MAX_HIGHSCORES, file);
+    fclose(file);
+
+    if (read != MAX_HIGHSCORES)
+    {
+        printf("Arquivo incompleto, resetando highscores\n");
+        ResetHighScores(highScores);
+        SaveHighScores(highScores);
+        return;
+    }
+
+    // Validação defensiva
+    for (int i = 0; i < MAX_HIGHSCORES; i++)
+    {
+        if (!IsValidEntry(&highScores[i]))
+        {
+            printf("Entrada inválida detectada, resetando highscores\n");
+            ResetHighScores(highScores);
+            SaveHighScores(highScores);
+            return;
+        }
+    }
+
+    printf("✅ Highscores carregados com sucesso\n");
+}
+
+void SaveHighScores(const HighScoreEntry *highScores)
+{
+    if (!highScores) return;
+
+    FILE *file = fopen(HIGHSCORE_FILE, "wb");
+    if (!file)
+    {
+        printf("Erro ao salvar highscores\n");
+        return;
+    }
+
+    fwrite(highScores, sizeof(HighScoreEntry), MAX_HIGHSCORES, file);
+    fclose(file);
+}
+
+int IsHighScore(const HighScoreEntry *highScores, int newScore)
+{
+    if (!highScores) return 0;
+    return newScore > highScores[MAX_HIGHSCORES - 1].score;
+}
+
+int GetHighScorePosition(const HighScoreEntry *highScores, int newScore)
+{
+    if (!highScores) return -1;
+
+    for (int i = 0; i < MAX_HIGHSCORES; i++)
+        if (newScore > highScores[i].score)
+            return i;
+
+    return -1;
+}
+
+void AddHighScore(HighScoreEntry *highScores, int newScore, const char *name)
+{
+    if (!highScores || !name) return;
+
+    int pos = GetHighScorePosition(highScores, newScore);
+    if (pos < 0) return;
+
+    for (int i = MAX_HIGHSCORES - 1; i > pos; i--)
+        highScores[i] = highScores[i - 1];
+
+    highScores[pos].score = newScore;
+    strncpy(highScores[pos].name, name, MAX_NAME_LENGTH - 1);
+    highScores[pos].name[MAX_NAME_LENGTH - 1] = '\0';
+
+    SaveHighScores(highScores);
+
+    printf("Highscore salvo: %s - %d (posição %d)\n",
+           highScores[pos].name, newScore, pos + 1);
 }

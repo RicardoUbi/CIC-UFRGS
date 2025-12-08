@@ -12,9 +12,8 @@
 static const char *skinPaths[MAX_SKINS] = {
     "src/assets/airplanes/air1.png",
     "src/assets/airplanes/air2.png",
-    "src/assets/airplanes/air3.png",
-    "src/assets/airplanes/air4.png",
-    "src/assets/airplanes/air5.png"};
+    "src/assets/airplanes/air3.png"
+};
 
 static Texture2D playerTextures[MAX_SKINS] = {0};
 static int texturesLoaded = 0;

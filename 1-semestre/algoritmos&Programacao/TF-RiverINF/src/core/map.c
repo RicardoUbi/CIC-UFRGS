@@ -58,8 +58,16 @@ void LoadMap(Map *map, const char *filename)
 
 void UpdateMapScroll(Map *map)
 {
-    map->scrollY -= map->scrollSpeed;
+    if (!map) return;
+
+    map->scrollY -= map->scrollSpeed; // ajustei aqui, pois estava + e estava dando ré no mapa
+
+    float maxScrollN = -(map->height * TILE_SIZE);
+
+    if (map->scrollY < maxScrollN)
+        map->scrollY = maxScrollN;
 }
+
 
 void DrawMap(const Map *map)
 {
