@@ -204,7 +204,7 @@ void AddCurrentScore(Game *game)
     // After saving, sanitize to keep UI safe
     SanitizeHighScores(game);
 
-    printf("💾 Highscore salvo: %s - %d pontos\n", game->playerName, game->score);
+    printf("Highscore salvo: %s - %d pontos\n", game->playerName, game->score);
 }
 
 /* ===== INICIALIZAÇÃO E RECURSOS ===== */
@@ -218,7 +218,7 @@ void LoadGameResources(Game *game)
     LoadHighScores(game->highScores);
     SanitizeHighScores(game);
 
-    printf("✅ Recursos do jogo carregados\n");
+    printf("Recursos do jogo carregados\n");
 }
 
 void UnloadGameResources(Game *game)
@@ -229,7 +229,7 @@ void UnloadGameResources(Game *game)
     UnloadPlayerTextures(&game->player);
     UnloadBulletSystem(&game->bulletSystem);
 
-    printf("✅ Recursos do jogo descarregados\n");
+    printf("Recursos do jogo descarregados\n");
 }
 
 void InitGame(Game *game)
@@ -617,7 +617,7 @@ void ProcessMenuInput(Game *game)
     else if (IsKeyPressed(KEY_ESCAPE))
     {
         // Fecha a janela quando ESC no menu
-        printf("👋 Saindo do jogo (ESC)...\n");
+        printf("Saindo do jogo (ESC)...\n");
         CloseWindow();
     }
     else if (IsKeyPressed(KEY_LEFT_BRACKET))

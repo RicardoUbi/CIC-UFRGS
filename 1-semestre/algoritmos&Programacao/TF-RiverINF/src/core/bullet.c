@@ -34,17 +34,17 @@ void InitBulletSystem(BulletSystem *system)
         if (FileExists("src/assets/sounds/shoot.wav"))
         {
             system->shootSound = LoadSound("src/assets/sounds/shoot.wav");
-            printf("🔊 Som de tiro carregado\n");
+            printf("Som de tiro carregado\n");
         }
         else
         {
-            printf("⚠️ Som de tiro não encontrado\n");
+            printf("Som de tiro não encontrado\n");
         }
     }
 
-    printf("✅ Sistema de tiros inicializado\n");
-    printf("   Capacidade: %d tiros\n", MAX_BULLETS);
-    printf("   Fire rate: %.1f tiros/segundo\n", 1.0f / FIRE_RATE);
+    printf("Sistema de tiros inicializado\n");
+    printf("Capacidade: %d tiros\n", MAX_BULLETS);
+    printf("Fire rate: %.1f tiros/segundo\n", 1.0f / FIRE_RATE);
 }
 
 void UnloadBulletSystem(BulletSystem *system)
@@ -86,7 +86,7 @@ void FireBullet(BulletSystem *system, float startX, float startY)
             }
 
             // DEBUG
-            // printf("🔫 Tiro disparado #%d em (%.0f, %.0f)\n", i, startX, startY);
+            // printf("Tiro disparado #%d em (%.0f, %.0f)\n", i, startX, startY);
             return;
         }
     }
@@ -138,7 +138,7 @@ void ClearBullets(BulletSystem *system)
         system->bullets[i].active = 0;
     }
     system->activeCount = 0;
-    printf("🧹 Todos os tiros foram limpos\n");
+    printf("Todos os tiros foram limpos\n");
 }
 
 void DrawBullets(const BulletSystem *system)

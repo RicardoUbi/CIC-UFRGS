@@ -276,7 +276,7 @@ int main(void)
     LoadObstaclesFromMap(&obstacleSystem, &mapa);
 
     printf("================================\n");
-    printf("🎮 TESTE DO SISTEMA DE OBSTÁCULOS\n");
+    printf("TESTE DO SISTEMA DE OBSTÁCULOS\n");
     printf("================================\n");
     printf("Obstáculos carregados: %d\n", GetActiveObstacleCount(&obstacleSystem));
     printf("\nLegenda:\n");
@@ -358,7 +358,7 @@ int main(void)
             if (IsKeyPressed(KEY_L))
             {
                 LoadObstaclesFromMap(&obstacleSystem, &mapa);
-                printf("🔄 Obstáculos recarregados do mapa\n");
+                printf("Obstáculos recarregados do mapa\n");
             }
             if (IsKeyPressed(KEY_H))
                 showHitboxes = !showHitboxes;
@@ -367,7 +367,7 @@ int main(void)
                 godMode = !godMode;
                 jogador.invincible = godMode;
                 jogador.invincibleTimer = godMode ? 9999.0f : 0;
-                printf("%s invencibilidade\n", godMode ? "✅ Ativou" : "⏸️ Desativou");
+                printf("%s invencibilidade\n", godMode ? "Ativou" : "Desativou");
             }
             if (IsKeyPressed(KEY_RIGHT_BRACKET))
                 NextPlayerSkin(&jogador);
@@ -520,7 +520,7 @@ int main(void)
     CloseWindow();
 
     printf("================================\n");
-    printf("👋 Teste finalizado\n");
+    printf("Teste finalizado\n");
     printf("Pontuação final: %d\n", jogador.score);
     printf("Obstáculos restantes: %d\n", GetActiveObstacleCount(&obstacleSystem));
     printf("================================\n");

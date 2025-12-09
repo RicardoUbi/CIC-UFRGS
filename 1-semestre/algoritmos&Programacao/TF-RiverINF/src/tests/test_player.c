@@ -70,7 +70,7 @@ int main(void)
     int skinChanged = 0;
     
     printf("================================\n");
-    printf("🎨 TESTE DE SKINS DO PLAYER\n");
+    printf("TESTE DE SKINS DO PLAYER\n");
     printf("================================\n");
     printf("Controles no jogo:\n");
     printf("  ← →  : Mover avião\n");
@@ -106,14 +106,14 @@ int main(void)
             if (IsKeyPressed(KEY_ENTER))
             {
                 showSkinSelector = 0;
-                printf("✅ Skin %d selecionada\n", jogador.currentSkin + 1);
+                printf("Skin %d selecionada\n", jogador.currentSkin + 1);
             }
             
             // Sai do seletor sem mudar
             if (IsKeyPressed(KEY_ESCAPE))
             {
                 showSkinSelector = 0;
-                printf("🚪 Sair do seletor de skins\n");
+                printf("Sair do seletor de skins\n");
             }
         }
         else
@@ -217,7 +217,7 @@ int main(void)
     CloseWindow();
     
     printf("================================\n");
-    printf("👋 Teste finalizado\n");
+    printf("Teste finalizado\n");
     printf("Skin final: %d\n", jogador.currentSkin + 1);
     printf("Pontuação: %d\n", jogador.score);
     printf("================================\n");

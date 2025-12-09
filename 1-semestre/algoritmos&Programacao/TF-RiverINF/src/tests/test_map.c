@@ -79,6 +79,6 @@ int main(void)
     
     // Encerra
     CloseWindow();
-    printf("👋 Teste finalizado\n");
+    printf("Teste finalizado\n");
     return 0;
 }

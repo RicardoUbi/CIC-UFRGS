@@ -65,7 +65,7 @@ void LoadHighScores(HighScoreEntry *highScores)
         }
     }
 
-    printf("✅ Highscores carregados com sucesso\n");
+    printf("Highscores carregados com sucesso\n");
 }
 
 void SaveHighScores(const HighScoreEntry *highScores)

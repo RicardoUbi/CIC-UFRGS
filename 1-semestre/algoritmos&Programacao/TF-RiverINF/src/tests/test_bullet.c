@@ -88,11 +88,11 @@ void DrawTargetsForTesting(BulletSystem* bulletSystem)
                 targetHealth[i]--;
                 hitBullet->active = 0;  // Destroi o tiro
                 
-                printf("🎯 Alvo %d atingido! Vida: %d\n", i + 1, targetHealth[i]);
+                printf("Alvo %d atingido! Vida: %d\n", i + 1, targetHealth[i]);
                 
                 if (targetHealth[i] <= 0)
                 {
-                    printf("💥 Alvo %d destruído!\n", i + 1);
+                    printf("Alvo %d destruído!\n", i + 1);
                 }
             }
         }
@@ -122,7 +122,7 @@ int main(void)
     InitBulletSystem(&bulletSystem);
     
     printf("================================\n");
-    printf("🎯 TESTE DO SISTEMA DE TIROS\n");
+    printf("TESTE DO SISTEMA DE TIROS\n");
     printf("================================\n");
     printf("Controles:\n");
     printf("  ← →   : Mover jogador\n");
@@ -167,7 +167,7 @@ int main(void)
         if (IsKeyPressed(KEY_T))
         {
             autoFire = !autoFire;
-            printf("%s auto-fire\n", autoFire ? "✅ Ativou" : "⏸️ Desativou");
+            printf("%s auto-fire\n", autoFire ? "Ativou" : "Desativou");
         }
         
         // Atualiza timer do auto-fire
@@ -184,12 +184,12 @@ int main(void)
         {
             InitPlayer(&jogador);
             ClearBullets(&bulletSystem);
-            printf("🔄 Tudo resetado!\n");
+            printf("Tudo resetado!\n");
         }
         if (IsKeyPressed(KEY_C))
         {
             ClearBullets(&bulletSystem);
-            printf("🧹 Todos os tiros limpos\n");
+            printf("Todos os tiros limpos\n");
         }
         if (IsKeyPressed(KEY_H)) showHitboxes = !showHitboxes;
         if (IsKeyPressed(KEY_RIGHT_BRACKET)) NextPlayerSkin(&jogador);
