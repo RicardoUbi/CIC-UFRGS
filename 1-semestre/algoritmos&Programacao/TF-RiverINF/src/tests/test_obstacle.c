@@ -95,7 +95,6 @@ void DrawGameOverScreen(const Player *player)
              20, GREEN);
 }
 
-// MODIFIQUE a função DrawPlayer para incluir efeito de piscar vermelho:
 void DrawPlayerWithEffects(const Player *player)
 {
     if (!player->active && gameOver)
@@ -119,7 +118,7 @@ void DrawPlayerWithEffects(const Player *player)
                           (Vector2){drawX, drawY},
                           0.0f,
                           player->scale,
-                          (Color){255, 100, 100, 200}); // Vermelho translúcido
+                          (Color){255, 100, 100, 200});
 
             // Borda vermelha
             DrawRectangleLinesEx((Rectangle){drawX, drawY, width, height},
@@ -128,7 +127,6 @@ void DrawPlayerWithEffects(const Player *player)
     }
     else
     {
-        // Desenho normal do jogador
         DrawPlayer(player);
     }
 }
@@ -138,7 +136,7 @@ void DrawDebugControls(void)
     int yStart = SCREEN_HEIGHT - 140;
     DrawRectangle(10, yStart, 400, 130, (Color){0, 0, 0, 180});
 
-    DrawText("🎯 CONTROLES DE TESTE:", 20, yStart + 10, 18, YELLOW);
+    DrawText("CONTROLES DE TESTE:", 20, yStart + 10, 18, YELLOW);
     DrawText("← → : Mover jogador", 20, yStart + 35, 16, WHITE);
     DrawText("ESPAÇO : Atirar", 20, yStart + 55, 16, WHITE);
     DrawText("F      : Reabastecer", 20, yStart + 75, 16, WHITE);
@@ -315,7 +313,6 @@ int main(void)
             UpdateMapScroll(&mapa);
             UpdatePlayer(&jogador);
             UpdateBullets(&bulletSystem);
-            UpdateObstacles(&obstacleSystem, mapa.scrollSpeed);
 
             // ===== COLISÕES =====
             // Tiros vs Obstáculos
@@ -323,7 +320,7 @@ int main(void)
             if (pointsEarned > 0)
             {
                 jogador.score += pointsEarned;
-                printf("🎯 +%d pontos! Total: %d\n", pointsEarned, jogador.score);
+                printf("+%d pontos! Total: %d\n", pointsEarned, jogador.score);
             }
 
             // Player vs Obstáculos

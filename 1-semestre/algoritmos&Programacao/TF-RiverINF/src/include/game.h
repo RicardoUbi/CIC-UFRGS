@@ -9,7 +9,7 @@
 #include "highscore.h"
 
 #define TOTAL_LEVELS 5
-#define MAX_NAME_LENGTH 20
+#define MAX_NAME_LENGTH 11
 
 typedef struct
 {
@@ -47,6 +47,10 @@ typedef struct
     int windowWidth;
     int windowHeight;
     float scaleFactor;
+
+    int pauseType;    // 0 = pausa simples | 1 = confirmar sair
+    float pauseTimer; // usado na contagem regressiva
+    int pauseCount;   // 3, 2, 1
 } Game;
 
 void LoadCampaignLevel(Game *game, int level);

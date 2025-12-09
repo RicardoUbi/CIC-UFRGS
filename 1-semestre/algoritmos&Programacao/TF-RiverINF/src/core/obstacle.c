@@ -36,10 +36,10 @@ static const char *obstacleNames[] = {
 static const int obstacleTypeScores[] = {
     [OBSTACLE_TYPE_NONE] = 0,
     [OBSTACLE_TYPE_TERRA] = 0,
-    [OBSTACLE_TYPE_NAVIO] = 100,
-    [OBSTACLE_TYPE_HELICOPTERO] = 200,
-    [OBSTACLE_TYPE_GAS] = 300,
-    [OBSTACLE_TYPE_PONTE] = 700};
+    [OBSTACLE_TYPE_NAVIO] = 30,
+    [OBSTACLE_TYPE_HELICOPTERO] = 60,
+    [OBSTACLE_TYPE_GAS] = 50,
+    [OBSTACLE_TYPE_PONTE] = 200};
 
 // Vida inicial de cada tipo
 static const int obstacleTypeHealth[] = {
@@ -161,13 +161,6 @@ void AddObstacle(ObstacleSystem *os, float x, float y, ObstacleType type)
     printf("Não há slots livres para obstáculos! (MAX: %d)\n", MAX_ENEMIES);
 }
 
-void UpdateObstacles(ObstacleSystem *os, float scrollSpeed)
-{
-    // No River Raid, os obstáculos são fixos no mundo
-    // O scroll é feito pelo movimento do mapa, não dos obstáculos
-    // Esta função existe para compatibilidade, mas não move obstáculos
-}
-
 void DrawObstacles(const ObstacleSystem *os, float scrollY)
 {
     for (int i = 0; i < MAX_ENEMIES; i++)
@@ -269,9 +262,6 @@ int CheckBulletObstacleCollision(ObstacleSystem *obsSystem, BulletSystem *bullet
         ObstacleType type = obstacleTypes[i];
 
         if (type <= OBSTACLE_TYPE_NONE || type > OBSTACLE_TYPE_PONTE)
-            continue;
-
-        if (type == OBSTACLE_TYPE_TERRA)
             continue;
 
         // Converte obstáculo para coordenadas de tela

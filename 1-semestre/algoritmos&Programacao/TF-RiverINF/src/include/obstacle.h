@@ -23,7 +23,6 @@ typedef enum {
 // Gerenciamento básico
 void InitObstacles(ObstacleSystem *os);
 void AddObstacle(ObstacleSystem *os, float x, float y, ObstacleType type);
-void UpdateObstacles(ObstacleSystem *os, float scrollSpeed);
 void DrawObstacles(const ObstacleSystem *os, float scrollY);
 void ClearObstacles(ObstacleSystem *os);
 Entity *GetObstacleAt(ObstacleSystem *os, float x, float y);

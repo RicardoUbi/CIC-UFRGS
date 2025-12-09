@@ -30,6 +30,7 @@ typedef enum
     CUSTOM_LEVEL,   // Fase personalizada
     NAME_INPUT,     // Entrada de nome
     HIGHSCORE,      // Highscores
+    GAME_PAUSED,    // Jogo pausado
 } GameState;
 
 // Estruturas base

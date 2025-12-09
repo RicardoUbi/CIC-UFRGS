@@ -5,14 +5,6 @@
 #include <ctype.h>
 #include <math.h>
 
-// Nomes dos arquivos das campanhas
-static const char *campaignLevels[] = {
-    "src/assets/maps/fase1.txt",
-    "src/assets/maps/fase2.txt",
-    "src/assets/maps/fase3.txt",
-    "src/assets/maps/fase4.txt",
-    "src/assets/maps/fase5.txt"};
-
 // Nomes amigáveis para os níveis
 static const char *levelNames[] = {
     "Rio Amazônico",
@@ -112,9 +104,6 @@ static void SanitizeHighScores(Game *game)
 
 /* ---------- Funções públicas/fluxo ---------- */
 
-#include "game.h"
-#include <stdio.h>
-
 void LoadCampaignLevel(Game *game, int level)
 {
     if (!game)
@@ -158,7 +147,8 @@ void LoadNextLevel(Game *game)
 
 int CheckLevelCompletion(Game *game)
 {
-    if (!game) return 0;
+    if (!game)
+        return 0;
 
     float endScroll = -(game->map.height * TILE_SIZE);
 
@@ -292,10 +282,10 @@ void InitGame(Game *game)
     LoadHighScores(game->highScores);
     SanitizeHighScores(game);
 
-    printf("🎮 Sistema de jogo inicializado\n");
-    printf("   Estado inicial: MENU\n");
-    printf("   Total de níveis: %d\n", game->totalLevels);
-    printf("   Tamanho da janela: %dx%d\n", game->windowWidth, game->windowHeight);
+    printf("Sistema de jogo inicializado\n");
+    printf("Estado inicial: MENU\n");
+    printf("Total de níveis: %d\n", game->totalLevels);
+    printf("Tamanho da janela: %dx%d\n", game->windowWidth, game->windowHeight);
 }
 
 void ResetGame(Game *game)
@@ -325,8 +315,9 @@ void ResetGame(Game *game)
     game->gameOver = 0;
     game->gameOverTimer = 0.0f;
     game->blinkTimer = 0.0f;
+    game->player.fuel = 100.0f;
 
-    printf("🔄 Jogo resetado\n");
+    printf("Jogo resetado\n");
 }
 
 /* ===== CONTROLE DE ESTADO ===== */
@@ -425,6 +416,7 @@ void LoadLevel(Game *game, const char *levelFile)
     // Garante jogador ativo e posicionado corretamente (centro inferior da tela)
     game->player.x = (float)(SCREEN_WIDTH / 2);
     game->player.y = (float)(SCREEN_HEIGHT - 40);
+    game->player.fuel = 100.0f;
     game->player.active = 1;
     if (game->player.lives <= 0)
         game->player.lives = 3; // fallback
@@ -477,12 +469,9 @@ void UpdateGameplay(Game *game)
     if (!game || !game->player.active)
         return;
 
-    float deltaTime = GetFrameTime();
-
     UpdateMapScroll(&game->map);
     UpdatePlayer(&game->player);
     UpdateBullets(&game->bulletSystem);
-    UpdateObstacles(&game->obstacleSystem, game->map.scrollSpeed);
 
     int pointsEarned = CheckBulletObstacleCollision(&game->obstacleSystem,
                                                     &game->bulletSystem,
@@ -533,10 +522,57 @@ void UpdateGameplay(Game *game)
         }
     }
 
+    if (game->pauseCount > 0)
+    {
+        game->pauseTimer += GetFrameTime();
+
+        if (game->pauseTimer >= 1.0f)
+        {
+            game->pauseTimer = 0;
+            game->pauseCount--;
+
+            if (game->pauseCount == 0)
+                return; // gameplay continua no próximo frame
+        }
+
+        return;
+    }
+
     ProcessGameplayInput(game);
 }
 
 /* ===== INPUT HANDLING ===== */
+
+void ProcessPauseInput(Game *game)
+{
+    if (!game)
+        return;
+
+    // PAUSA COM CONFIRMAÇÃO (ESC)
+    if (game->pauseType == 1)
+    {
+        if (IsKeyPressed(KEY_ENTER))
+        {
+            ChangeState(game, MENU);
+        }
+
+        if (IsKeyPressed(KEY_ESCAPE))
+        {
+            ChangeState(game, GAMEPLAY);
+        }
+    }
+
+    // PAUSA SIMPLES (ENTER)
+    else
+    {
+        if (IsKeyPressed(KEY_ENTER))
+        {
+            game->pauseCount = 3;
+            game->pauseTimer = 0;
+            ChangeState(game, GAMEPLAY);
+        }
+    }
+}
 
 void ProcessMenuInput(Game *game)
 {
@@ -601,7 +637,7 @@ void ProcessGameplayInput(Game *game)
 
     MovePlayer(&game->player);
 
-    if (IsKeyPressed(KEY_SPACE) || IsKeyDown(KEY_SPACE))
+    if (IsKeyPressed(KEY_SPACE) || IsKeyDown(KEY_K))
     {
         FireBulletFromPlayer(&game->bulletSystem, &game->player);
     }
@@ -609,13 +645,13 @@ void ProcessGameplayInput(Game *game)
     if (IsKeyPressed(KEY_F))
     {
         Refuel(&game->player, 30.0f);
-        printf("⛽ Reabastecido! Combustível: %.0f\n", game->player.fuel);
+        printf("Reabastecido! Combustível: %.0f\n", game->player.fuel);
     }
 
     if (IsKeyPressed(KEY_H))
     {
         game->showHitboxes = !game->showHitboxes;
-        printf("🎯 Hitboxes: %s\n", game->showHitboxes ? "ON" : "OFF");
+        printf("Hitboxes: %s\n", game->showHitboxes ? "ON" : "OFF");
     }
 
     if (IsKeyPressed(KEY_I))
@@ -623,12 +659,13 @@ void ProcessGameplayInput(Game *game)
         game->godMode = !game->godMode;
         game->player.invincible = game->godMode;
         game->player.invincibleTimer = game->godMode ? 9999.0f : 0;
-        printf("🛡️  God mode: %s\n", game->godMode ? "ON" : "OFF");
+        printf("God mode: %s\n", game->godMode ? "ON" : "OFF");
     }
 
     if (IsKeyPressed(KEY_ESCAPE))
     {
-        ChangeState(game, MENU);
+        game->pauseType = 1;
+        ChangeState(game, GAME_PAUSED);
     }
 
     if (IsKeyPressed(KEY_R))
@@ -639,9 +676,10 @@ void ProcessGameplayInput(Game *game)
             LoadCustomLevel(game, game->customLevelFile);
     }
 
-    if (IsKeyPressed(KEY_P))
+    if (IsKeyPressed(KEY_ENTER))
     {
-        // Placeholder: implementar pausa se necessário
+        game->pauseType = 0; // pausa normal
+        ChangeState(game, GAME_PAUSED);
     }
 }
 
@@ -813,6 +851,10 @@ void UpdateGame(Game *game)
         UpdateGameplay(game);
         break;
 
+    case GAME_PAUSED:
+        ProcessPauseInput(game);
+        break;
+
     case GAME_OVER:
         ProcessGameOverInput(game);
         game->gameOverTimer += deltaTime;
@@ -854,10 +896,13 @@ void UpdateWindowSize(Game *game, int width, int height)
     float scaleY = (float)height / SCREEN_HEIGHT;
     game->scaleFactor = (scaleX < scaleY) ? scaleX : scaleY;
 
-    if (game->scaleFactor < 0.5f)
-        game->scaleFactor = 0.5f;
+    if (game->scaleFactor < 0.75f)
+        game->scaleFactor = 0.75f;
 
-    printf("🖥️  Janela redimensionada: %dx%d (Escala: %.2f)\n",
+    if (game->scaleFactor > 2.0f)
+        game->scaleFactor = 2.0f;
+
+    printf("Janela redimensionada: %dx%d (Escala: %.2f)\n",
            width, height, game->scaleFactor);
 }
 
@@ -868,6 +913,7 @@ void DrawScaled(Game *game, void (*drawFunction)(Game *))
 
     int renderWidth = SCREEN_WIDTH * game->scaleFactor;
     int renderHeight = SCREEN_HEIGHT * game->scaleFactor;
+
     int offsetX = (game->windowWidth - renderWidth) / 2;
     int offsetY = (game->windowHeight - renderHeight) / 2;
 
@@ -884,15 +930,79 @@ void DrawScaled(Game *game, void (*drawFunction)(Game *))
     }
     EndTextureMode();
 
-    DrawTexturePro(target.texture,
-                   (Rectangle){0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT},
-                   (Rectangle){offsetX, offsetY, renderWidth, renderHeight},
-                   (Vector2){0, 0},
-                   0.0f,
-                   WHITE);
+    DrawTexturePro(
+        target.texture,
+        (Rectangle){0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT},
+        (Rectangle){offsetX, offsetY, renderWidth, renderHeight},
+        (Vector2){0, 0},
+        0.0f,
+        WHITE);
+
+    DrawRectangle(0, 0, game->windowWidth, offsetY, BLACK);                      // topo
+    DrawRectangle(0, offsetY + renderHeight, game->windowWidth, offsetY, BLACK); // base
+    DrawRectangle(0, offsetY, offsetX, renderHeight, BLACK);                     // esquerda
+    DrawRectangle(offsetX + renderWidth, offsetY, offsetX, renderHeight, BLACK); // direita
 }
 
 /* Funções de desenho específicas para cada estado */
+void DrawExitPopup(void)
+{
+    int boxWidth = 520;
+    int boxHeight = 140;
+    int boxX = 260;
+    int boxY = 320;
+
+    DrawRectangle(boxX, boxY, boxWidth, boxHeight, Fade(BLACK, 0.75f));
+
+    // Texto
+    DrawText("Deseja voltar ao menu?",
+             boxX + 70, boxY + 30, 30, RED);
+
+    DrawText("ENTER - Sim | ESC - Nao",
+             boxX + 120, boxY + 80, 20, GOLD);
+}
+
+void DrawPausedText(void)
+{
+    int boxWidth = 520;
+    int boxHeight = 140;
+    int boxX = 260;
+    int boxY = 320;
+
+    DrawRectangle(boxX, boxY, boxWidth, boxHeight, Fade(BLACK, 0.75f));
+
+    // Texto
+    DrawText("PAUSADO",
+             boxX + 180, boxY + 30, 30, GRAY);
+
+    DrawText("ENTER para continuar",
+             boxX + 130, boxY + 80, 20, GOLD);
+}
+
+void DrawPlayerWithEffects(Game *game)
+{
+    if (!game->player.active && game->gameOver)
+    {
+        // Calcula dimensões escaladas
+        float width = game->player.texture.width * game->player.scale;
+        float height = game->player.texture.height * game->player.scale;
+
+        // Posição para centralizar
+        float drawX = game->player.x - width / 2;
+        float drawY = game->player.y - height / 2;
+
+        // Desenha o jogador com tom vermelho
+        DrawTextureEx(game->player.texture,
+                      (Vector2){drawX, drawY},
+                      0.0f,
+                      game->player.scale,
+                      (Color){255, 100, 100, 200});
+
+        // Borda vermelha
+        // DrawRectangleLinesEx((Rectangle){drawX, drawY, width, height},
+        //                      3, RED);
+    }
+}
 
 void DrawGameplayContent(Game *game)
 {
@@ -936,19 +1046,17 @@ void DrawHUD(Game *game)
 
     DrawRectangle(0, 0, game->windowWidth, 70, UI_BACKGROUND);
     DrawText(TextFormat("SCORE: %06d", game->score), 20, 10, 24, WHITE);
-    DrawText(TextFormat("LIVES: %d", game->player.lives), 20, 40, 20,
-             game->player.lives > 1 ? GREEN : RED);
 
     int fuelBarWidth = 200;
-    int fuelBarX = 150;
-    int fuelBarY = 15;
+    int fuelBarX = 230;
+    int fuelBarY = 10;
 
     DrawText("FUEL:", fuelBarX, fuelBarY, 20, WHITE);
     DrawRectangle(fuelBarX + 50, fuelBarY, fuelBarWidth, 20, RED);
     DrawRectangle(fuelBarX + 50, fuelBarY, (int)(game->player.fuel * 2), 20, GREEN);
     DrawText(TextFormat("%.0f", game->player.fuel), fuelBarX + 50 + fuelBarWidth + 10, fuelBarY, 20, WHITE);
 
-    int infoX = 450;
+    int infoX = 550;
     if (!game->isCustomLevel)
     {
         DrawText(TextFormat("LEVEL: %d/%d", game->currentLevel, TOTAL_LEVELS),
@@ -1002,12 +1110,8 @@ void DrawMenuState(Game *game)
 
         if (i == currentMenuOption)
         {
-            // float selectionPulse = sinf(menuSelectionTimer * 5) * 0.2f + 1.0f;
-            fontSize = 28; //(int)(28 * selectionPulse);
+            fontSize = 28;
             color = SELECTED_COLOR;
-
-            // DrawText(">", game->windowWidth / 2 - 200, startY + i * optionSpacing, fontSize, color);
-            // DrawText("<", game->windowWidth / 2 + 180, startY + i * optionSpacing, fontSize, color);
         }
 
         int textWidth = MeasureText(menuOptions[i], fontSize);
@@ -1015,9 +1119,9 @@ void DrawMenuState(Game *game)
                  startY + i * optionSpacing, fontSize, color);
     }
 
-    DrawText(TextFormat("HIGHSCORE: %s - %d",
-                        game->highScores[0].name, game->highScores[0].score),
-             game->windowWidth / 2 - 120, 490, 20, GOLD);
+    DrawText(TextFormat("HIGHSCORE: %s - %d", game->highScores[0].name, game->highScores[0].score),
+             game->windowWidth / 2 - MeasureText(TextFormat("HIGHSCORE: %s - %d", game->highScores[0].name, game->highScores[0].score), 20) / 2,
+             490, 20, GOLD);
 
     DrawText(TextFormat("SKIN: %d/%d", game->player.currentSkin + 1, GetPlayerSkinCount()),
              game->windowWidth / 2 - 55, 540, 20, YELLOW);
@@ -1050,6 +1154,8 @@ void DrawGameOverState(Game *game)
         DrawText("GAME OVER",
                  game->windowWidth / 2 - MeasureText("GAME OVER", 80) / 2,
                  game->windowHeight / 2 - 100, 80, RED);
+
+        DrawPlayerWithEffects(game);
     }
 
     DrawText(TextFormat("SCORE: %06d", game->score),
@@ -1221,8 +1327,8 @@ void DrawNameInputState(Game *game)
              game->windowWidth / 2 - MeasureText(TextFormat("Pontuação: %06d", game->score), 30) / 2,
              180, 30, WHITE);
 
-    DrawText("Digite seu nome (máximo 3 letras):",
-             game->windowWidth / 2 - MeasureText("Digite seu nome (máximo 3 letras):", 25) / 2,
+    DrawText(TextFormat("Digite seu nome (máximo %d letras):", MAX_NAME_LENGTH - 1),
+             game->windowWidth / 2 - MeasureText(TextFormat("Digite seu nome (máximo %d letras):", MAX_NAME_LENGTH - 1), 25) / 2,
              250, 25, LIGHTGRAY);
 
     int boxWidth = 200;
@@ -1307,6 +1413,15 @@ void DrawGame(Game *game)
         break;
     case GAMEPLAY:
         DrawGameplayState(game);
+        break;
+
+    case GAME_PAUSED:
+        DrawGameplayContent(game);
+
+        if (game->pauseType == 1)
+            DrawExitPopup();
+        else
+            DrawPausedText();
         break;
 
     case GAME_OVER:

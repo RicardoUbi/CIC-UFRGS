@@ -11,7 +11,7 @@ TESTS_DIR = $(SRC_DIR)/tests
 all: river-inf.exe
 
 # JOGO COMPLETO
-river-inf.exe: $(SRC_DIR)/main.c \
+river-inf: $(SRC_DIR)/main.c \
                $(CORE_DIR)/game.c \
                $(CORE_DIR)/player.c \
                $(CORE_DIR)/bullet.c \
@@ -20,6 +20,7 @@ river-inf.exe: $(SRC_DIR)/main.c \
                $(CORE_DIR)/highscore.c
 	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)
 	@echo Jogo compilado: river-inf.exe
+	./river-inf.exe
 
 # TESTE DE HIGHSCORE
 test-highscore:$(TESTS_DIR)/test_highscore.c $(CORE_DIR)/highscore.c

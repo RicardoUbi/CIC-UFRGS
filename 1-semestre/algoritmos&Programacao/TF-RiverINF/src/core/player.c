@@ -4,9 +4,9 @@
 
 #define PLAYER_WIDTH 30
 #define PLAYER_HEIGHT 30
-#define PLAYER_SPEED 5.0f
+#define PLAYER_SPEED 5.0f // Mudar velocidade do jogador
 #define START_FUEL 100.0f
-#define FUEL_CONSUMPTION 0.025f
+#define FUEL_CONSUMPTION 0.05f
 #define INVINCIBILITY_TIME 2.0f
 
 static const char *skinPaths[MAX_SKINS] = {
