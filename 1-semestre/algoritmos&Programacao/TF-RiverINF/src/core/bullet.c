@@ -28,7 +28,6 @@ void InitBulletSystem(BulletSystem *system)
     system->lastShotTime = 0;
     system->shootSound = (Sound){0};
 
-    // Tenta carregar som (opcional)
     if (IsAudioDeviceReady())
     {
         if (FileExists("src/assets/sounds/shoot.wav"))
