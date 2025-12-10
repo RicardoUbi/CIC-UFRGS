@@ -4,7 +4,7 @@
 
 #define PLAYER_WIDTH 30
 #define PLAYER_HEIGHT 30
-#define PLAYER_SPEED 5.0f // Mudar velocidade do jogador
+#define PLAYER_SPEED 5.0f // Mudar velocidade lateral do jogador
 #define START_FUEL 100.0f
 #define FUEL_CONSUMPTION 0.05f
 #define INVINCIBILITY_TIME 2.0f
@@ -12,8 +12,7 @@
 static const char *skinPaths[MAX_SKINS] = {
     "src/assets/airplanes/air1.png",
     "src/assets/airplanes/air2.png",
-    "src/assets/airplanes/air3.png"
-};
+    "src/assets/airplanes/air3.png"};
 
 static Texture2D playerTextures[MAX_SKINS] = {0};
 static int texturesLoaded = 0;
@@ -240,12 +239,14 @@ int GetPlayerSkinCount(void)
 void NextPlayerSkin(Player *player)
 {
     int newSkin = (player->currentSkin + 1) % MAX_SKINS;
+    printf("Skin alterada para: %d\n", newSkin);
     ChangePlayerSkin(player, newSkin);
 }
 
 void PreviousPlayerSkin(Player *player)
 {
     int newSkin = (player->currentSkin - 1 + MAX_SKINS) % MAX_SKINS;
+    printf("Skin alterada para: %d\n", newSkin);
     ChangePlayerSkin(player, newSkin);
 }
 
@@ -276,11 +277,11 @@ Rectangle GetPlayerHitbox(const Player *player)
 {
     if (!player)
         return (Rectangle){0, 0, 0, 0};
-    
+
     // Se o jogador não está ativo, retorna hitbox vazia
     if (!player->active)
         return (Rectangle){0, 0, 0, 0};
-    
+
     // Se tem textura carregada, usa a hitbox calculada
     if (player->texture.id != 0)
     {
@@ -292,10 +293,9 @@ Rectangle GetPlayerHitbox(const Player *player)
         float width = 30.0f * player->scale;
         float height = 30.0f * player->scale;
         return (Rectangle){
-            player->x - width/2,
-            player->y - height/2,
+            player->x - width / 2,
+            player->y - height / 2,
             width,
-            height
-        };
+            height};
     }
 }

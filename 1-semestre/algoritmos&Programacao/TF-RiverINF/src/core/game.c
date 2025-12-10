@@ -20,7 +20,6 @@ static const char *menuOptions[] = {
     "Pressione R para Ranking",
     "Pressione ESC para Sair"};
 
-// Cores para responsividade
 #define BACKGROUND_COLOR (Color){20, 20, 40, 255}
 #define UI_BACKGROUND (Color){0, 0, 0, 200}
 #define SELECTED_COLOR (Color){255, 200, 50, 255}
@@ -138,7 +137,7 @@ void LoadNextLevel(Game *game)
     if (nextLevel > game->totalLevels)
     {
         game->gameWon = 1;
-        ChangeState(game, MENU);
+        ChangeState(game, VICTORY);
         return;
     }
 
@@ -161,31 +160,27 @@ void DrawSkinPreview(Game *game)
         return;
 
     Texture2D tex = game->player.texture;
-
     if (tex.id == 0)
         return;
 
-    int x = game->windowWidth / 2 - tex.width / 2;
-    int y = 600;
+    float scale = 0.7f;
 
-    DrawTexture(tex, x, y, WHITE);
-}
+    float dstW = tex.width * scale;
+    float dstH = tex.height * scale;
 
-void CheckHighScoreGame(Game *game)
-{
-    if (!game)
-        return;
+    Rectangle src = {0, 0, tex.width, tex.height};
 
-    if (IsHighScore(game->highScores, game->score))
-    {
-        printf("Nova pontuação recorde: %d!\n", game->score);
-        ChangeState(game, NAME_INPUT);
-    }
-    else
-    {
-        printf("Pontuação %d não é um recorde (min: %d)\n",
-               game->score, game->highScores[MAX_HIGHSCORES - 1].score);
-    }
+    Rectangle dst = {
+        SCREEN_WIDTH / 2,
+        600,
+        dstW,
+        dstH};
+
+    Vector2 origin = {
+        dstW / 2,
+        0};
+
+    DrawTexturePro(tex, src, dst, origin, 0.0f, WHITE);
 }
 
 void AddCurrentScore(Game *game)
@@ -315,8 +310,10 @@ void ResetGame(Game *game)
     game->gameOver = 0;
     game->gameOverTimer = 0.0f;
     game->blinkTimer = 0.0f;
-    game->player.fuel = 100.0f;
-
+    if (!game->pauseType || game->player.active)
+    {
+        game->player.fuel = 100.0f;
+    }
     printf("Jogo resetado\n");
 }
 
@@ -359,12 +356,10 @@ void ChangeState(Game *game, GameState newState)
     case GAME_OVER:
         game->gameOver = 1;
         game->gameOverTimer = 0.0f;
-        CheckHighScoreGame(game);
         break;
 
     case VICTORY:
         game->gameWon = 1;
-        CheckHighScoreGame(game);
         break;
 
     case CUSTOM_LEVEL:
@@ -416,7 +411,6 @@ void LoadLevel(Game *game, const char *levelFile)
     // Garante jogador ativo e posicionado corretamente (centro inferior da tela)
     game->player.x = (float)(SCREEN_WIDTH / 2);
     game->player.y = (float)(SCREEN_HEIGHT - 40);
-    game->player.fuel = 100.0f;
     game->player.active = 1;
     if (game->player.lives <= 0)
         game->player.lives = 3; // fallback
@@ -515,6 +509,8 @@ void UpdateGameplay(Game *game)
 
             LoadNextLevel(game);
         }
+
+        // Remover
         else
         {
             game->gameWon = 1;
@@ -620,11 +616,11 @@ void ProcessMenuInput(Game *game)
         printf("Saindo do jogo (ESC)...\n");
         CloseWindow();
     }
-    else if (IsKeyPressed(KEY_LEFT_BRACKET))
+    else if (IsKeyPressed(KEY_HOME) || IsKeyPressed(KEY_F11))
     {
         PreviousPlayerSkin(&game->player);
     }
-    else if (IsKeyPressed(KEY_RIGHT_BRACKET))
+    else if (IsKeyPressed(KEY_END) || IsKeyPressed(KEY_F12))
     {
         NextPlayerSkin(&game->player);
     }
@@ -687,7 +683,7 @@ void ProcessGameOverInput(Game *game)
 {
     if (IsKeyPressed(KEY_ENTER))
     {
-        if (IsHighScore(game->highScores, game->score))
+        if (IsHighScore(game->highScores, game->score) && !game->isCustomLevel)
         {
             ChangeState(game, NAME_INPUT);
         }
@@ -718,7 +714,7 @@ void ProcessVictoryInput(Game *game)
 {
     if (IsKeyPressed(KEY_ENTER))
     {
-        if (IsHighScore(game->highScores, game->score))
+        if (IsHighScore(game->highScores, game->score) && !game->isCustomLevel)
         {
             ChangeState(game, NAME_INPUT);
         }
@@ -945,7 +941,7 @@ void DrawScaled(Game *game, void (*drawFunction)(Game *))
 }
 
 /* Funções de desenho específicas para cada estado */
-void DrawExitPopup(void)
+void DrawExitPopup(Game *game)
 {
     int boxWidth = 520;
     int boxHeight = 140;
@@ -962,7 +958,7 @@ void DrawExitPopup(void)
              boxX + 120, boxY + 80, 20, GOLD);
 }
 
-void DrawPausedText(void)
+void DrawPausedText(Game *game)
 {
     int boxWidth = 520;
     int boxHeight = 140;
@@ -1089,15 +1085,17 @@ void DrawMenuState(Game *game)
 {
     ClearBackground(BACKGROUND_COLOR);
 
-    // float pulse = sinf(menuPulse) * 0.1f + 1.0f;
-    int titleSize = 60; // (int)(60 * pulse);
+    int centerX = SCREEN_WIDTH / 2;
+
+    int titleSize = 50;
     const char *title = "RIVER RAID INF";
 
     int titleWidth = MeasureText(title, titleSize);
-    DrawText(title, game->windowWidth / 2 - titleWidth / 2, 80, titleSize, GREEN);
+    DrawText(title, centerX - titleWidth / 2, 80, titleSize, GREEN);
 
-    DrawText("Ricardo Ubirajara - Algoritmos & Programação",
-             game->windowWidth / 2 - MeasureText("Ricardo Ubirajara - Algoritmos & Programação", 20) / 2,
+    const char *subtitle = "Ricardo Ubirajara - Algoritmos & Programação";
+    DrawText(subtitle,
+             centerX - MeasureText(subtitle, 20) / 2,
              160, 20, LIGHTGRAY);
 
     int startY = 250;
@@ -1115,23 +1113,45 @@ void DrawMenuState(Game *game)
         }
 
         int textWidth = MeasureText(menuOptions[i], fontSize);
-        DrawText(menuOptions[i], game->windowWidth / 2 - textWidth / 2,
-                 startY + i * optionSpacing, fontSize, color);
+        DrawText(menuOptions[i],
+                 centerX - textWidth / 2,
+                 startY + i * optionSpacing,
+                 fontSize,
+                 color);
     }
 
-    DrawText(TextFormat("HIGHSCORE: %s - %d", game->highScores[0].name, game->highScores[0].score),
-             game->windowWidth / 2 - MeasureText(TextFormat("HIGHSCORE: %s - %d", game->highScores[0].name, game->highScores[0].score), 20) / 2,
+    // Highscore
+    const char *hsText =
+        TextFormat("HIGHSCORE: %s - %d",
+                   game->highScores[0].name,
+                   game->highScores[0].score);
+
+    DrawText(hsText,
+             centerX - MeasureText(hsText, 20) / 2,
              490, 20, GOLD);
 
-    DrawText(TextFormat("SKIN: %d/%d", game->player.currentSkin + 1, GetPlayerSkinCount()),
-             game->windowWidth / 2 - 55, 540, 20, YELLOW);
+    // Skin info
+    const char *skinText =
+        TextFormat("SKIN: %d/%d",
+                   game->player.currentSkin + 1,
+                   GetPlayerSkinCount());
 
-    DrawText("Use [ ] para mudar", game->windowWidth / 2 - 80, 570, 16, GRAY);
+    DrawText(skinText,
+             centerX - MeasureText(skinText, 20) / 2,
+             540, 20, YELLOW);
+
+    const char *hintText = "Use F11/F12 ou Home/End para mudar";
+    DrawText(hintText,
+             centerX - MeasureText(hintText, 16) / 2,
+             570, 16, GRAY);
+
     DrawSkinPreview(game);
 
-    DrawText("Pressione ESC para sair",
-             game->windowWidth / 2 - MeasureText("Pressione ESC para sair", 18) / 2,
-             game->windowHeight - 50, 18, DARKGRAY);
+    const char *exitText = "Pressione ESC para sair";
+    DrawText(exitText,
+             centerX - MeasureText(exitText, 18) / 2,
+             SCREEN_HEIGHT - 50,
+             18, DARKGRAY);
 }
 
 void DrawGameplayState(Game *game)
@@ -1162,7 +1182,7 @@ void DrawGameOverState(Game *game)
              game->windowWidth / 2 - MeasureText(TextFormat("SCORE: %06d", game->score), 40) / 2,
              game->windowHeight / 2, 40, WHITE);
 
-    if (IsHighScore(game->highScores, game->score))
+    if (IsHighScore(game->highScores, game->score) && !game->isCustomLevel)
     {
         DrawText("NOVO RECORDE!",
                  game->windowWidth / 2 - MeasureText("NOVO RECORDE!", 30) / 2,
@@ -1171,7 +1191,7 @@ void DrawGameOverState(Game *game)
                  game->windowWidth / 2 - MeasureText("Pressione ENTER para salvar", 20) / 2,
                  game->windowHeight / 2 + 100, 20, GREEN);
     }
-    else
+    else if (!game->isCustomLevel)
     {
         DrawText(TextFormat("Recorde: %d", game->highScores[0].score),
                  game->windowWidth / 2 - MeasureText(TextFormat("Recorde: %d", game->highScores[0].score), 30) / 2,
@@ -1184,6 +1204,22 @@ void DrawGameOverState(Game *game)
     DrawText("Pressione ESC para voltar ao menu",
              game->windowWidth / 2 - MeasureText("Pressione ESC para voltar ao menu", 20) / 2,
              game->windowHeight / 2 + 170, 20, WHITE);
+
+    if (((int)(game->blinkTimer * 3) % 2) == 0)
+    {
+        if (game->gameOver && game->player.fuel <= 0)
+        {
+            DrawText("Motivo de derrota: sem combustível",
+                     game->windowWidth / 2 - MeasureText("Motivo de derrota: sem combustível", 20) / 2,
+                     game->windowHeight / 2 + 230, 20, RED);
+        }
+        if (game->gameOver && game->player.fuel > 0 && game->player.active == 0)
+        {
+            DrawText("Motivo de derrota: colisão fatal",
+                     game->windowWidth / 2 - MeasureText("Motivo de derrota: sem combustível", 20) / 2,
+                     game->windowHeight / 2 + 230, 20, RED);
+        }
+    }
 }
 
 void DrawVictoryState(Game *game)
@@ -1213,7 +1249,7 @@ void DrawVictoryState(Game *game)
              game->windowWidth / 2 - MeasureText(TextFormat("SCORE: %06d", game->score), 40) / 2,
              game->windowHeight / 2 + 20, 40, WHITE);
 
-    if (IsHighScore(game->highScores, game->score))
+    if (IsHighScore(game->highScores, game->score) && !game->isCustomLevel)
     {
         DrawText("NOVO RECORDE!",
                  game->windowWidth / 2 - MeasureText("NOVO RECORDE!", 30) / 2,
@@ -1223,12 +1259,6 @@ void DrawVictoryState(Game *game)
                  game->windowHeight / 2 + 120, 20, GREEN);
     }
 
-    if (!game->isCustomLevel && game->currentLevel < TOTAL_LEVELS)
-    {
-        DrawText("Pressione ENTER para próximo nível",
-                 game->windowWidth / 2 - MeasureText("Pressione ENTER para próximo nível", 20) / 2,
-                 game->windowHeight / 2 + 160, 20, WHITE);
-    }
     DrawText("Pressione ESC para voltar ao menu",
              game->windowWidth / 2 - MeasureText("Pressione ESC para voltar ao menu", 20) / 2,
              game->windowHeight / 2 + 190, 20, WHITE);
@@ -1409,19 +1439,19 @@ void DrawGame(Game *game)
     switch (game->currentState)
     {
     case MENU:
-        DrawMenuState(game);
+        DrawScaled(game, DrawMenuState);
         break;
     case GAMEPLAY:
         DrawGameplayState(game);
         break;
 
     case GAME_PAUSED:
-        DrawGameplayContent(game);
+        DrawScaled(game, DrawGameplayContent);
 
         if (game->pauseType == 1)
-            DrawExitPopup();
+            DrawScaled(game, DrawExitPopup);
         else
-            DrawPausedText();
+            DrawScaled(game, DrawPausedText);
         break;
 
     case GAME_OVER:
@@ -1429,7 +1459,7 @@ void DrawGame(Game *game)
         DrawGameOverState(game);
         break;
     case VICTORY:
-        DrawVictoryState(game);
+        DrawVictoryState(game); // ok
         break;
     case CUSTOM_LEVEL:
         DrawCustomLevelState(game);

@@ -13,8 +13,8 @@ static int obstacleHealth[MAX_ENEMIES];
 static int obstacleScore[MAX_ENEMIES];
 static int obstacleWidth[MAX_ENEMIES];
 static int obstacleHeight[MAX_ENEMIES];
-static ObstacleType obstacleTypes[MAX_ENEMIES]; // Para mapear char para enum
-
+static ObstacleType obstacleTypes[MAX_ENEMIES];
+static Texture2D obstacleTextures[OBSTACLE_TYPE_PONTE + 1];
 // Cores para cada tipo de obstáculo
 static const Color obstacleColors[] = {
     [OBSTACLE_TYPE_TERRA] = GREEN,
@@ -98,6 +98,31 @@ static ObstacleType CharToObstacleType(char c)
     }
 }
 
+static void LoadObstacleTexturesInternal()
+{
+    // Caminhos para as texturas - ajuste conforme sua estrutura
+    const char *texturePaths[] = {
+        [OBSTACLE_TYPE_TERRA] = "src/assets/obstacles/terrain.png",
+        [OBSTACLE_TYPE_NAVIO] = "src/assets/obstacles/ship.png",
+        [OBSTACLE_TYPE_HELICOPTERO] = "src/assets/obstacles/helicopter.png",
+        [OBSTACLE_TYPE_GAS] = "src/assets/obstacles/gas.png",
+        [OBSTACLE_TYPE_PONTE] = "src/assets/obstacles/ponte.png"};
+
+    for (int i = OBSTACLE_TYPE_TERRA; i <= OBSTACLE_TYPE_PONTE; i++)
+    {
+        if (FileExists(texturePaths[i]))
+        {
+            obstacleTextures[i] = LoadTexture(texturePaths[i]);
+            printf("Textura carregada: %s\n", texturePaths[i]);
+        }
+        else
+        {
+            printf("AVISO: Textura não encontrada: %s\n", texturePaths[i]);
+            obstacleTextures[i].id = 0; // Marca como não carregada
+        }
+    }
+}
+
 // Converte coordenadas de mundo para tela
 static void WorldToScreen(float worldX, float worldY, float scrollY,
                           float *screenX, float *screenY)
@@ -123,6 +148,13 @@ void InitObstacles(ObstacleSystem *os)
     }
 
     os->activeEntitiesCount = 0;
+
+    static int texturesLoaded = 0;
+    if (!texturesLoaded)
+    {
+        LoadObstacleTexturesInternal();
+        texturesLoaded = 1;
+    }
 
     printf("Sistema de obstáculos inicializado\n");
     printf("Capacidade: %d obstáculos\n", MAX_ENEMIES);
@@ -161,6 +193,17 @@ void AddObstacle(ObstacleSystem *os, float x, float y, ObstacleType type)
     printf("Não há slots livres para obstáculos! (MAX: %d)\n", MAX_ENEMIES);
 }
 
+void UnloadObstacleTextures()
+{
+    for (int i = OBSTACLE_TYPE_TERRA; i <= OBSTACLE_TYPE_PONTE; i++)
+    {
+        if (obstacleTextures[i].id != 0)
+        {
+            UnloadTexture(obstacleTextures[i]);
+        }
+    }
+}
+
 void DrawObstacles(const ObstacleSystem *os, float scrollY)
 {
     for (int i = 0; i < MAX_ENEMIES; i++)
@@ -174,43 +217,46 @@ void DrawObstacles(const ObstacleSystem *os, float scrollY)
         if (type <= OBSTACLE_TYPE_NONE)
             continue;
 
-        // Converte para coordenadas de tela
         float screenX, screenY;
         WorldToScreen(ent->x, ent->y, scrollY, &screenX, &screenY);
 
-        // Verifica se está visível na tela
         if (screenY < -obstacleHeight[i] || screenY > SCREEN_HEIGHT + obstacleHeight[i])
             continue;
 
-        // Desenha o obstáculo
-        DrawRectangle(screenX, screenY, obstacleWidth[i], obstacleHeight[i],
-                      obstacleColors[type]);
-
-        // Desenha o caractere identificador
-        char typeChar = ent->type;
-        char str[2] = {typeChar, '\0'};
-
-        // Centraliza o texto
-        float textX = screenX + (obstacleWidth[i] / 2) - 4;
-        float textY = screenY + (obstacleHeight[i] / 2) - 8;
-
-        DrawText(str, textX, textY, 16, WHITE);
-
-        // Para obstáculos com múltiplos segmentos, mostra divisões
-        if (obstacleTypeWidth[type] > 1)
+        // Tenta usar textura
+        if (obstacleTextures[type].id != 0)
         {
-            for (int seg = 1; seg < obstacleTypeWidth[type]; seg++)
-            {
-                float divX = screenX + (seg * TILE_SIZE);
-                DrawLine(divX, screenY, divX, screenY + obstacleHeight[i], BLACK);
-            }
+            Texture2D tex = obstacleTextures[type];
 
-            // Mostra saúde restante
-            if (obstacleHealth[i] > 0 && obstacleHealth[i] < obstacleTypeHealth[type])
-            {
-                DrawText(TextFormat("%d", obstacleHealth[i]),
-                         screenX, screenY - 20, 16, YELLOW);
-            }
+            // Para obstáculos multi-tile, ajusta a escala
+            float drawWidth = obstacleWidth[i];
+            float drawHeight = obstacleHeight[i];
+
+            // Calcula escala para manter proporção
+            float scaleX = drawWidth / tex.width;
+            float scaleY = drawHeight / tex.height;
+
+            DrawTextureEx(tex,
+                          (Vector2){screenX, screenY},
+                          0.0f,
+                          scaleX > scaleY ? scaleX : scaleY, // Mantém proporção
+                          WHITE);
+        }
+        else
+        {
+            // Fallback: retângulo colorido
+            DrawRectangle(screenX, screenY,
+                          obstacleWidth[i], obstacleHeight[i],
+                          obstacleColors[type]);
+
+            // Adiciona o caractere identificador
+            char typeChar = ent->type;
+            int fontSize = 20;
+            int textWidth = MeasureText(&typeChar, fontSize);
+            DrawText(&typeChar,
+                     screenX + (obstacleWidth[i] - textWidth) / 2,
+                     screenY + (obstacleHeight[i] - fontSize) / 2,
+                     fontSize, BLACK);
         }
     }
 }
@@ -475,7 +521,7 @@ const char *GetObstacleTypeName(ObstacleType type)
 
 int GetObstacleScoreValue(ObstacleType type)
 {
-    if (type >= OBSTACLE_TYPE_NONE  && type <= OBSTACLE_TYPE_PONTE)
+    if (type >= OBSTACLE_TYPE_NONE && type <= OBSTACLE_TYPE_PONTE)
         return obstacleTypeScores[type];
     return OBSTACLE_TYPE_NONE;
 }
