@@ -1,4 +1,3 @@
-// src/core/obstacle.c
 #include "obstacle.h"
 #include "raylib.h"
 #include <stdio.h>

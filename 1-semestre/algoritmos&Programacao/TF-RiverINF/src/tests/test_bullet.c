@@ -1,4 +1,3 @@
-// src/tests/test_bullet.c
 #include "raylib.h"
 #include <stddef.h>
 #include <stdio.h>
