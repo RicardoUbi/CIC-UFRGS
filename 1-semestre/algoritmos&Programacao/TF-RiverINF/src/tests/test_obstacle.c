@@ -192,11 +192,11 @@ void DebugPrintPositions(const Player *player, const ObstacleSystem *system,
     // A cada 60 frames (1 segundo), mostra informações
     if (frameCount % 60 == 0)
     {
-        //printf("\n=== DEBUG Frame %d ===\n", frameCount);
-        //printf("Player: (%.0f, %.0f)\n", player->x, player->y);
-        //printf("ScrollY: %.0f\n", scrollY);
-        //printf("Tiros ativos: %d\n", GetActiveBulletCount(bulletSystem));
-        //printf("Obstáculos ativos: %d\n", GetActiveObstacleCount(system));
+        printf("\n=== DEBUG Frame %d ===\n", frameCount);
+        printf("Player: (%.0f, %.0f)\n", player->x, player->y);
+        printf("ScrollY: %.0f\n", scrollY);
+        printf("Tiros ativos: %d\n", GetActiveBulletCount(bulletSystem));
+        printf("Obstáculos ativos: %d\n", GetActiveObstacleCount(system));
 
         // Mostra posição de alguns obstáculos
         int count = 0;
@@ -229,14 +229,14 @@ void DebugPrintPositions(const Player *player, const ObstacleSystem *system,
                     break;
                 }
 
-                //printf("Obstáculo %d [%s]: mundo(%.0f,%.0f) tela(%.0f,%.0f)\n",
+                printf("Obstáculo %d [%s]: mundo(%.0f,%.0f) tela(%.0f,%.0f)\n",
                        i, typeName,
                        system->entities[i].x, system->entities[i].y,
                        screenX, screenY);
                 count++;
             }
         }
-        //printf("=====================\n");
+        printf("=====================\n");
     }
 }
 
@@ -246,7 +246,7 @@ int main(void)
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Teste: Sistema de Obstáculos");
     if (!IsWindowReady())
     {
-        //printf("ERRO: Falha ao criar a janela!\n");
+        printf("ERRO: Falha ao criar a janela!\n");
         return 1;
     }
     SetTargetFPS(60);
@@ -275,26 +275,26 @@ int main(void)
     // Carrega obstáculos do mapa
     LoadObstaclesFromMap(&obstacleSystem, &mapa);
 
-    //printf("================================\n");
-    //printf("TESTE DO SISTEMA DE OBSTÁCULOS\n");
-    //printf("================================\n");
-    //printf("Obstáculos carregados: %d\n", GetActiveObstacleCount(&obstacleSystem));
-    //printf("\nLegenda:\n");
-    //printf("  N - Navio (azul)       = 100 pontos\n");
-    //printf("  X - Helicóptero (laranja) = 200 pontos\n");
-    //printf("  G - Posto (vermelho)   = Reabastece\n");
-    //printf("  P - Ponte (marrom)     = 700 pontos\n");
-    //printf("\nControles:\n");
-    //printf("  ← →   : Mover jogador\n");
-    //printf("  ESPAÇO: Atirar\n");
-    //printf("  F     : Reabastecer\n");
-    //printf("  C     : Limpar todos os tiros\n");
-    //printf("  R     : Resetar tudo\n");
-    //printf("  L     : Recarregar obstáculos do mapa\n");
-    //printf("  H     : Mostrar/esconder hitboxes\n");
-    //printf("  I     : Toggle invencibilidade\n");
-    //printf("  [ ]   : Mudar skin do jogador\n");
-    //printf("================================\n");
+    printf("================================\n");
+    printf("TESTE DO SISTEMA DE OBSTÁCULOS\n");
+    printf("================================\n");
+    printf("Obstáculos carregados: %d\n", GetActiveObstacleCount(&obstacleSystem));
+    printf("\nLegenda:\n");
+    printf("  N - Navio (azul)       = 100 pontos\n");
+    printf("  X - Helicóptero (laranja) = 200 pontos\n");
+    printf("  G - Posto (vermelho)   = Reabastece\n");
+    printf("  P - Ponte (marrom)     = 700 pontos\n");
+    printf("\nControles:\n");
+    printf("  ← →   : Mover jogador\n");
+    printf("  ESPAÇO: Atirar\n");
+    printf("  F     : Reabastecer\n");
+    printf("  C     : Limpar todos os tiros\n");
+    printf("  R     : Resetar tudo\n");
+    printf("  L     : Recarregar obstáculos do mapa\n");
+    printf("  H     : Mostrar/esconder hitboxes\n");
+    printf("  I     : Toggle invencibilidade\n");
+    printf("  [ ]   : Mudar skin do jogador\n");
+    printf("================================\n");
 
     // Variáveis de teste
     int showHitboxes = 0;
@@ -320,7 +320,7 @@ int main(void)
             if (pointsEarned > 0)
             {
                 jogador.score += pointsEarned;
-                //printf("+%d pontos! Total: %d\n", pointsEarned, jogador.score);
+                printf("+%d pontos! Total: %d\n", pointsEarned, jogador.score);
             }
 
             // Player vs Obstáculos
@@ -333,7 +333,7 @@ int main(void)
             {
                 gameOver = 1;
                 gameOverTimer = 0;
-                //printf("GAME OVER! Pontuação final: %d\n", jogador.score);
+                printf("GAME OVER! Pontuação final: %d\n", jogador.score);
             }
 
             // Debug
@@ -353,12 +353,12 @@ int main(void)
                 InitPlayer(&jogador);
                 ClearBullets(&bulletSystem);
                 LoadObstaclesFromMap(&obstacleSystem, &mapa);
-                //printf("Tudo resetado!\n");
+                printf("Tudo resetado!\n");
             }
             if (IsKeyPressed(KEY_L))
             {
                 LoadObstaclesFromMap(&obstacleSystem, &mapa);
-                //printf("Obstáculos recarregados do mapa\n");
+                printf("Obstáculos recarregados do mapa\n");
             }
             if (IsKeyPressed(KEY_H))
                 showHitboxes = !showHitboxes;
@@ -367,7 +367,7 @@ int main(void)
                 godMode = !godMode;
                 jogador.invincible = godMode;
                 jogador.invincibleTimer = godMode ? 9999.0f : 0;
-                //printf("%s invencibilidade\n", godMode ? "Ativou" : "Desativou");
+                printf("%s invencibilidade\n", godMode ? "Ativou" : "Desativou");
             }
             if (IsKeyPressed(KEY_RIGHT_BRACKET))
                 NextPlayerSkin(&jogador);
@@ -399,7 +399,7 @@ int main(void)
             gameOver = 0;
             gameOverTimer = 0;
             blinkTimer = 0;
-            //printf("Tudo resetado!\n");
+            printf("Tudo resetado!\n");
         }
 
         // ===== RENDERIZAÇÃO =====
@@ -519,11 +519,11 @@ int main(void)
     UnloadPlayerTextures(&jogador);
     CloseWindow();
 
-    //printf("================================\n");
-    //printf("Teste finalizado\n");
-    //printf("Pontuação final: %d\n", jogador.score);
-    //printf("Obstáculos restantes: %d\n", GetActiveObstacleCount(&obstacleSystem));
-    //printf("================================\n");
+    printf("================================\n");
+    printf("Teste finalizado\n");
+    printf("Pontuação final: %d\n", jogador.score);
+    printf("Obstáculos restantes: %d\n", GetActiveObstacleCount(&obstacleSystem));
+    printf("================================\n");
 
     return 0;
 }

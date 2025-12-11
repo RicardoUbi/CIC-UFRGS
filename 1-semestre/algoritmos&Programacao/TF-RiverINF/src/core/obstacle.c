@@ -113,11 +113,11 @@ static void LoadObstacleTexturesInternal()
         if (FileExists(texturePaths[i]))
         {
             obstacleTextures[i] = LoadTexture(texturePaths[i]);
-            //printf("Textura carregada: %s\n", texturePaths[i]);
+            printf("Textura carregada: %s\n", texturePaths[i]);
         }
         else
         {
-            //printf("AVISO: Textura não encontrada: %s\n", texturePaths[i]);
+            printf("AVISO: Textura não encontrada: %s\n", texturePaths[i]);
             obstacleTextures[i].id = 0; // Marca como não carregada
         }
     }
@@ -156,8 +156,8 @@ void InitObstacles(ObstacleSystem *os)
         texturesLoaded = 1;
     }
 
-    //printf("Sistema de obstáculos inicializado\n");
-    //printf("Capacidade: %d obstáculos\n", MAX_ENEMIES);
+    printf("Sistema de obstáculos inicializado\n");
+    printf("Capacidade: %d obstáculos\n", MAX_ENEMIES);
 }
 
 void AddObstacle(ObstacleSystem *os, float x, float y, ObstacleType type)
@@ -184,13 +184,13 @@ void AddObstacle(ObstacleSystem *os, float x, float y, ObstacleType type)
 
             os->activeEntitiesCount++;
 
-            //printf("Obstáculo %s adicionado em (%.0f, %.0f)\n",
+            printf("Obstáculo %s adicionado em (%.0f, %.0f)\n",
                    obstacleNames[type], x, y);
             return;
         }
     }
 
-    //printf("Não há slots livres para obstáculos! (MAX: %d)\n", MAX_ENEMIES);
+    printf("Não há slots livres para obstáculos! (MAX: %d)\n", MAX_ENEMIES);
 }
 
 void UnloadObstacleTextures()
@@ -268,7 +268,7 @@ void ClearObstacles(ObstacleSystem *os)
         os->entities[i].active = 0;
     }
     os->activeEntitiesCount = 0;
-    //printf("Todos os obstáculos removidos\n");
+    printf("Todos os obstáculos removidos\n");
 }
 
 Entity *GetObstacleAt(ObstacleSystem *os, float x, float y)
@@ -341,7 +341,7 @@ int CheckBulletObstacleCollision(ObstacleSystem *obsSystem, BulletSystem *bullet
                 obstacleHealth[i] -= bullet->damage;
                 bullet->active = 0; // Destroi o tiro
 
-                //printf("ACERTOU %s! Saúde: %d/%d\n",
+                printf("ACERTOU %s! Saúde: %d/%d\n",
                        obstacleNames[type], obstacleHealth[i], obstacleTypeHealth[type]);
 
                 // Se a saúde chegou a zero, destrói o obstáculo
@@ -351,7 +351,7 @@ int CheckBulletObstacleCollision(ObstacleSystem *obsSystem, BulletSystem *bullet
                     obsSystem->activeEntitiesCount--;
                     totalPoints += obstacleScore[i];
 
-                    //printf("%s DESTRUÍDO! +%d pontos\n",
+                    printf("%s DESTRUÍDO! +%d pontos\n",
                            obstacleNames[type], obstacleScore[i]);
                 }
 
@@ -394,7 +394,7 @@ void HandlePlayerObstacleCollision(ObstacleSystem *system, Player *player, float
 
         if (CheckCollisionRecs(playerRect, obsRect))
         {
-            //printf("COLISÃO detectada com %s\n", obstacleNames[type]);
+            printf("COLISÃO detectada com %s\n", obstacleNames[type]);
 
             switch (type)
             {
@@ -404,14 +404,14 @@ void HandlePlayerObstacleCollision(ObstacleSystem *system, Player *player, float
             case OBSTACLE_TYPE_PONTE:
                 // Mata o jogador (ou tira vida)
                 player->active = 0;
-                //printf("COLISÃO FATAL com %s! Jogador morreu.\n",
+                printf("COLISÃO FATAL com %s! Jogador morreu.\n",
                        obstacleNames[type]);
                 break;
 
             case OBSTACLE_TYPE_GAS:
                 // Reabastece
                 Refuel(player, 30.0f);
-                //printf("REABASTECENDO no posto! Combustível: %.0f/100\n", player->fuel);
+                printf("REABASTECENDO no posto! Combustível: %.0f/100\n", player->fuel);
                 break;
 
             default:
@@ -429,7 +429,7 @@ void LoadObstaclesFromMap(ObstacleSystem *system, const Map *map)
 {
     ClearObstacles(system);
 
-    //printf("Carregando obstáculos do mapa...\n");
+    printf("Carregando obstáculos do mapa...\n");
     int count = 0;
     int terraCount = 0;
 
@@ -477,7 +477,7 @@ void LoadObstaclesFromMap(ObstacleSystem *system, const Map *map)
                     // Pula as células já processadas
                     x += (consecutive - 1);
 
-                    //printf("Obstáculo %s de %d tiles em (%.0f, %.0f)\n",
+                    printf("Obstáculo %s de %d tiles em (%.0f, %.0f)\n",
                            obstacleNames[type], widthInTiles, worldX, worldY);
                 }
                 else
@@ -497,7 +497,7 @@ void LoadObstaclesFromMap(ObstacleSystem *system, const Map *map)
         }
     }
 
-    //printf("%d obstáculos carregados do mapa (%d blocos de terra)\n", count, terraCount);
+    printf("%d obstáculos carregados do mapa (%d blocos de terra)\n", count, terraCount);
 }
 
 int GetActiveObstacleCount(const ObstacleSystem *system)

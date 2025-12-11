@@ -69,17 +69,17 @@ int main(void)
     int showSkinSelector = 1;  // Começa mostrando seletor
     int skinChanged = 0;
     
-    //printf("================================\n");
-    //printf("TESTE DE SKINS DO PLAYER\n");
-    //printf("================================\n");
-    //printf("Controles no jogo:\n");
-    //printf("  ← →  : Mover avião\n");
-    //printf("  F    : Reabastecer\n");
-    //printf("  P    : Ativar/Desativar\n");
-    //printf("  R    : Resetar\n");
-    //printf("  [ ]  : Mudar skin\n");
-    //printf("  M    : Mostrar/esconder seletor\n");
-    //printf("================================\n");
+    printf("================================\n");
+    printf("TESTE DE SKINS DO PLAYER\n");
+    printf("================================\n");
+    printf("Controles no jogo:\n");
+    printf("  ← →  : Mover avião\n");
+    printf("  F    : Reabastecer\n");
+    printf("  P    : Ativar/Desativar\n");
+    printf("  R    : Resetar\n");
+    printf("  [ ]  : Mudar skin\n");
+    printf("  M    : Mostrar/esconder seletor\n");
+    printf("================================\n");
     
     while (!WindowShouldClose())
     {
@@ -106,14 +106,14 @@ int main(void)
             if (IsKeyPressed(KEY_ENTER))
             {
                 showSkinSelector = 0;
-                //printf("Skin %d selecionada\n", jogador.currentSkin + 1);
+                printf("Skin %d selecionada\n", jogador.currentSkin + 1);
             }
             
             // Sai do seletor sem mudar
             if (IsKeyPressed(KEY_ESCAPE))
             {
                 showSkinSelector = 0;
-                //printf("Sair do seletor de skins\n");
+                printf("Sair do seletor de skins\n");
             }
         }
         else
@@ -216,11 +216,11 @@ int main(void)
     UnloadPlayerTextures(&jogador);
     CloseWindow();
     
-    //printf("================================\n");
-    //printf("Teste finalizado\n");
-    //printf("Skin final: %d\n", jogador.currentSkin + 1);
-    //printf("Pontuação: %d\n", jogador.score);
-    //printf("================================\n");
+    printf("================================\n");
+    printf("Teste finalizado\n");
+    printf("Skin final: %d\n", jogador.currentSkin + 1);
+    printf("Pontuação: %d\n", jogador.score);
+    printf("================================\n");
     
     return 0;
 }

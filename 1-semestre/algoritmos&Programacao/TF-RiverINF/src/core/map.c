@@ -13,7 +13,7 @@ void LoadMap(Map *map, const char *filename)
     FILE *f = fopen(filename, "r");
     if (!f)
     {
-        //printf("Erro ao abrir %s. Criando mapa vazio.\n", filename);
+        printf("Erro ao abrir %s. Criando mapa vazio.\n", filename);
         for (int y = 0; y < MAP_ROWS; y++)
         {
             for (int x = 0; x < MAP_COLS; x++)
@@ -53,7 +53,7 @@ void LoadMap(Map *map, const char *filename)
     }
     map->height = lineCount;
     fclose(f);
-    //printf("Mapa '%s' carregado: %d linhas\n", filename, map->height);
+    printf("Mapa '%s' carregado: %d linhas\n", filename, map->height);
 }
 
 void UpdateMapScroll(Map *map)

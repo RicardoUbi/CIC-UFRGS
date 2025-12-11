@@ -22,21 +22,21 @@ void LoadPlayerTextures(Player *player)
     if (texturesLoaded)
         return;
 
-    //printf("Carregando texturas do jogador...\n");
+    printf("Carregando texturas do jogador...\n");
 
     for (int i = 0; i < MAX_SKINS; i++)
     {
         if (FileExists(skinPaths[i]))
         {
             playerTextures[i] = LoadTexture(skinPaths[i]);
-            //printf("Skin %d: %s (%dx%d)\n",
+            printf("Skin %d: %s (%dx%d)\n",
                    i, skinPaths[i],
                    playerTextures[i].width,
                    playerTextures[i].height);
         }
         else
         {
-            //printf("Skin %d não encontrada: %s\n", i, skinPaths[i]);
+            printf("Skin %d não encontrada: %s\n", i, skinPaths[i]);
             // Carrega uma textura padrão (retângulo colorido)
             Image defaultImg = GenImageColor(64, 64,
                                              (i == 0) ? YELLOW : (i == 1) ? RED
@@ -49,7 +49,7 @@ void LoadPlayerTextures(Player *player)
     }
 
     texturesLoaded = 1;
-    //printf("Todas as texturas carregadas!\n");
+    printf("Todas as texturas carregadas!\n");
 }
 
 void UnloadPlayerTextures(Player *player)
@@ -63,7 +63,7 @@ void UnloadPlayerTextures(Player *player)
     }
 
     texturesLoaded = 0;
-    //printf("Texturas do jogador descarregadas\n");
+    printf("Texturas do jogador descarregadas\n");
 }
 
 void InitPlayer(Player *player)
@@ -90,10 +90,10 @@ void InitPlayer(Player *player)
     player->hitbox.x = player->x - player->hitbox.width / 2;
     player->hitbox.y = player->y - player->hitbox.height / 2;
 
-    //printf("Jogador inicializado\n");
-    //printf("Skin: %d (%s)\n", player->currentSkin, skinPaths[player->currentSkin]);
-    //printf("Posição: (%.0f, %.0f)\n", player->x, player->y);
-    //printf("Hitbox: %.0fx%.0f\n", player->hitbox.width, player->hitbox.height);
+    printf("Jogador inicializado\n");
+    printf("Skin: %d (%s)\n", player->currentSkin, skinPaths[player->currentSkin]);
+    printf("Posição: (%.0f, %.0f)\n", player->x, player->y);
+    printf("Hitbox: %.0fx%.0f\n", player->hitbox.width, player->hitbox.height);
 }
 
 void UpdatePlayer(Player *player)
@@ -119,7 +119,7 @@ void UpdatePlayer(Player *player)
     {
         player->fuel = 0;
         player->active = 0;
-        //printf("Jogador morreu sem combustivel!\n");
+        printf("Jogador morreu sem combustivel!\n");
     }
 
     player->hitbox.x = player->x - player->hitbox.width / 2;
@@ -217,7 +217,7 @@ void ChangePlayerSkin(Player *player, int skinIndex)
 {
     if (skinIndex < 0 || skinIndex >= MAX_SKINS)
     {
-        //printf("Índice de skin inválido: %d\n", skinIndex);
+        printf("Índice de skin inválido: %d\n", skinIndex);
         return;
     }
 
@@ -228,7 +228,7 @@ void ChangePlayerSkin(Player *player, int skinIndex)
     player->hitbox.width = player->texture.width * player->scale * HITBOX_SCALE;
     player->hitbox.height = player->texture.height * player->scale * HITBOX_SCALE;
 
-    //printf("Skin alterada para: %d\n", skinIndex);
+    printf("Skin alterada para: %d\n", skinIndex);
 }
 
 int GetPlayerSkinCount(void)
@@ -239,14 +239,14 @@ int GetPlayerSkinCount(void)
 void NextPlayerSkin(Player *player)
 {
     int newSkin = (player->currentSkin + 1) % MAX_SKINS;
-    //printf("Skin alterada para: %d\n", newSkin);
+    printf("Skin alterada para: %d\n", newSkin);
     ChangePlayerSkin(player, newSkin);
 }
 
 void PreviousPlayerSkin(Player *player)
 {
     int newSkin = (player->currentSkin - 1 + MAX_SKINS) % MAX_SKINS;
-    //printf("Skin alterada para: %d\n", newSkin);
+    printf("Skin alterada para: %d\n", newSkin);
     ChangePlayerSkin(player, newSkin);
 }
 
@@ -259,12 +259,12 @@ void PlayerTakeDamage(Player *player)
     player->invincible = 1;
     player->invincibleTimer = INVINCIBILITY_TIME;
 
-    //printf("Dano! Vidas restantes: %d\n", player->lives);
+    printf("Dano! Vidas restantes: %d\n", player->lives);
 
     if (player->lives <= 0)
     {
         player->active = 0;
-        //printf("Jogador derrotado!\n");
+        printf("Jogador derrotado!\n");
     }
 }
 
