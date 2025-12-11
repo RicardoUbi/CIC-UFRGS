@@ -26,7 +26,7 @@ void ResetHighScores(HighScoreEntry *highScores)
         highScores[i].score = 0;
     }
 
-    printf("Highscores resetados (zerados)\n");
+    //printf("Highscores resetados (zerados)\n");
 }
 
 void LoadHighScores(HighScoreEntry *highScores)
@@ -36,7 +36,7 @@ void LoadHighScores(HighScoreEntry *highScores)
     FILE *file = fopen(HIGHSCORE_FILE, "rb");
     if (!file)
     {
-        printf("Arquivo de highscore não existe, criando novo\n");
+        //printf("Arquivo de highscore não existe, criando novo\n");
         ResetHighScores(highScores);
         SaveHighScores(highScores);
         return;
@@ -47,7 +47,7 @@ void LoadHighScores(HighScoreEntry *highScores)
 
     if (read != MAX_HIGHSCORES)
     {
-        printf("Arquivo incompleto, resetando highscores\n");
+        //printf("Arquivo incompleto, resetando highscores\n");
         ResetHighScores(highScores);
         SaveHighScores(highScores);
         return;
@@ -58,14 +58,14 @@ void LoadHighScores(HighScoreEntry *highScores)
     {
         if (!IsValidEntry(&highScores[i]))
         {
-            printf("Entrada inválida detectada, resetando highscores\n");
+            //printf("Entrada inválida detectada, resetando highscores\n");
             ResetHighScores(highScores);
             SaveHighScores(highScores);
             return;
         }
     }
 
-    printf("Highscores carregados com sucesso\n");
+    //printf("Highscores carregados com sucesso\n");
 }
 
 void SaveHighScores(const HighScoreEntry *highScores)
@@ -75,7 +75,7 @@ void SaveHighScores(const HighScoreEntry *highScores)
     FILE *file = fopen(HIGHSCORE_FILE, "wb");
     if (!file)
     {
-        printf("Erro ao salvar highscores\n");
+        //printf("Erro ao salvar highscores\n");
         return;
     }
 
@@ -116,6 +116,6 @@ void AddHighScore(HighScoreEntry *highScores, int newScore, const char *name)
 
     SaveHighScores(highScores);
 
-    printf("Highscore salvo: %s - %d (posição %d)\n",
+    //printf("Highscore salvo: %s - %d (posição %d)\n",
            highScores[pos].name, newScore, pos + 1);
 }

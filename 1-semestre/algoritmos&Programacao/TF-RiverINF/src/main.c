@@ -10,7 +10,7 @@ int main(void)
 
     if (!IsWindowReady())
     {
-        printf("Erro ao criar a janela!\n");
+        //printf("Erro ao criar a janela!\n");
         return 1;
     }
 
@@ -56,12 +56,12 @@ int main(void)
     UnloadGameResources(&game);
     CloseWindow();
 
-    printf("\n================================\n");
-    printf("Jogo finalizado\n");
-    printf("Pontuação final: %d\n", game.score);
-    printf("Melhor highscore: %s - %d\n",
+    //printf("\n================================\n");
+    //printf("Jogo finalizado\n");
+    //printf("Pontuação final: %d\n", game.score);
+    //printf("Melhor highscore: %s - %d\n",
            game.highScores[0].name, game.highScores[0].score);
-    printf("================================\n");
+    //printf("================================\n");
 
     return 0;
 }

@@ -11,25 +11,25 @@
 // Função para testar todas as funcionalidades
 void RunAllTests(HighScoreEntry *highScores)
 {
-    printf("\n=== EXECUTANDO TESTES DE HIGHSCORE ===\n");
+    //printf("\n=== EXECUTANDO TESTES DE HIGHSCORE ===\n");
     
     // Teste 1: Carregar highscores
-    printf("\n1. Carregando highscores...\n");
+    //printf("\n1. Carregando highscores...\n");
     LoadHighScores(highScores);
     
     // Teste 2: Verificar se é highscore
-    printf("\n2. Verificando pontuações...\n");
+    //printf("\n2. Verificando pontuações...\n");
     int testScores[] = {500, 1500, 800, 950, 1200};
     for (int i = 0; i < 5; i++)
     {
         int isHigh = IsHighScore(highScores, testScores[i]);
-        printf("Pontuação %d: %s um highscore\n", 
+        //printf("Pontuação %d: %s um highscore\n", 
                testScores[i], 
                isHigh ? "É" : "NÃO É");
     }
     
     // Teste 3: Adicionar novos highscores
-    printf("\n3. Adicionando novos highscores...\n");
+    //printf("\n3. Adicionando novos highscores...\n");
     
     // Limpa highscores existentes para teste
     ResetHighScores(highScores);
@@ -43,26 +43,26 @@ void RunAllTests(HighScoreEntry *highScores)
     AddHighScore(highScores, 600, "TRAINEE");
     
     // Teste 4: Ordenação
-    printf("\n4. Ordenando highscores...\n");
+    //printf("\n4. Ordenando highscores...\n");
     SortHighScores(highScores);
     
     // Teste 5: Verificar posição
-    printf("\n5. Verificando posições...\n");
+    //printf("\n5. Verificando posições...\n");
     int newScores[] = {2000, 1500, 800, 300};
     for (int i = 0; i < 4; i++)
     {
         int pos = GetHighScorePosition(highScores, newScores[i]);
         if (pos != -1)
         {
-            printf("   Pontuação %d entraria na posição %d\n", newScores[i], pos + 1);
+            //printf("   Pontuação %d entraria na posição %d\n", newScores[i], pos + 1);
         }
         else
         {
-            printf("   Pontuação %d não é um highscore\n", newScores[i]);
+            //printf("   Pontuação %d não é um highscore\n", newScores[i]);
         }
     }
     
-    printf("\n=== TESTES CONCLUÍDOS ===\n");
+    //printf("\n=== TESTES CONCLUÍDOS ===\n");
 }
 
 // Função para desenhar a tela de teste
@@ -109,18 +109,18 @@ int main(void)
     InitWindow(TEST_WINDOW_WIDTH, TEST_WINDOW_HEIGHT, "Teste: Sistema de Highscore");
     SetTargetFPS(60);
     
-    printf("================================\n");
-    printf("TESTE DO SISTEMA DE HIGHSCORE\n");
-    printf("================================\n");
-    printf("Este teste verifica todas as funcionalidades do sistema de highscores.\n");
-    printf("Highscores são salvos em: %s\n", HIGHSCORE_FILE);
-    printf("\nComandos disponíveis:\n");
-    printf("  R - Reset highscores\n");
-    printf("  L - Carregar highscores\n");
-    printf("  S - Salvar highscores\n");
-    printf("  T - Executar todos os testes\n");
-    printf("  ESC - Sair\n");
-    printf("================================\n");
+    //printf("================================\n");
+    //printf("TESTE DO SISTEMA DE HIGHSCORE\n");
+    //printf("================================\n");
+    //printf("Este teste verifica todas as funcionalidades do sistema de highscores.\n");
+    //printf("Highscores são salvos em: %s\n", HIGHSCORE_FILE);
+    //printf("\nComandos disponíveis:\n");
+    //printf("  R - Reset highscores\n");
+    //printf("  L - Carregar highscores\n");
+    //printf("  S - Salvar highscores\n");
+    //printf("  T - Executar todos os testes\n");
+    //printf("  ESC - Sair\n");
+    //printf("================================\n");
     
     // Array de highscores
     HighScoreEntry highScores[MAX_HIGHSCORES];
@@ -179,11 +179,11 @@ int main(void)
             if (IsHighScore(highScores, randomScore))
             {
                 AddHighScore(highScores, randomScore, randomName);
-                sprintf(testMessage, "Adicionado: %s - %d pontos", randomName, randomScore);
+                s//printf(testMessage, "Adicionado: %s - %d pontos", randomName, randomScore);
             }
             else
             {
-                sprintf(testMessage, "%d pontos não é um highscore (mínimo: %d)", 
+                s//printf(testMessage, "%d pontos não é um highscore (mínimo: %d)", 
                        randomScore, highScores[MAX_HIGHSCORES - 1].score);
             }
             lastUpdate = clock();
@@ -205,12 +205,12 @@ int main(void)
     // Limpeza
     CloseWindow();
     
-    printf("\n================================\n");
-    printf("Teste finalizado\n");
-    printf("Highscores finais salvos em: %s\n", HIGHSCORE_FILE);
-    printf("Último highscore: %s - %d pontos\n", 
+    //printf("\n================================\n");
+    //printf("Teste finalizado\n");
+    //printf("Highscores finais salvos em: %s\n", HIGHSCORE_FILE);
+    //printf("Último highscore: %s - %d pontos\n", 
            highScores[0].name, highScores[0].score);
-    printf("================================\n");
+    //printf("================================\n");
     
     return 0;
 }

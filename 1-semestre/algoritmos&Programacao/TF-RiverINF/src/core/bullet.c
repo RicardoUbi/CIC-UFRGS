@@ -33,17 +33,17 @@ void InitBulletSystem(BulletSystem *system)
         if (FileExists("src/assets/sounds/shoot.wav"))
         {
             system->shootSound = LoadSound("src/assets/sounds/shoot.wav");
-            printf("Som de tiro carregado\n");
+            //printf("Som de tiro carregado\n");
         }
         else
         {
-            printf("Som de tiro não encontrado\n");
+            //printf("Som de tiro não encontrado\n");
         }
     }
 
-    printf("Sistema de tiros inicializado\n");
-    printf("Capacidade: %d tiros\n", MAX_BULLETS);
-    printf("Fire rate: %.1f tiros/segundo\n", 1.0f / FIRE_RATE);
+    //printf("Sistema de tiros inicializado\n");
+    //printf("Capacidade: %d tiros\n", MAX_BULLETS);
+    //printf("Fire rate: %.1f tiros/segundo\n", 1.0f / FIRE_RATE);
 }
 
 void UnloadBulletSystem(BulletSystem *system)
@@ -51,9 +51,9 @@ void UnloadBulletSystem(BulletSystem *system)
     if (system->shootSound.frameCount > 0)
     {
         UnloadSound(system->shootSound);
-        printf("Som de tiro descarregado\n");
+        //printf("Som de tiro descarregado\n");
     }
-    printf("Sistema de tiros descarregado\n");
+    //printf("Sistema de tiros descarregado\n");
 }
 
 void FireBullet(BulletSystem *system, float startX, float startY)
@@ -85,13 +85,13 @@ void FireBullet(BulletSystem *system, float startX, float startY)
             }
 
             // DEBUG
-            // printf("Tiro disparado #%d em (%.0f, %.0f)\n", i, startX, startY);
+            // //printf("Tiro disparado #%d em (%.0f, %.0f)\n", i, startX, startY);
             return;
         }
     }
 
     // Se chegou aqui, não há tiros disponíveis
-    printf("Nenhum tiro disponível! (MAX: %d)\n", MAX_BULLETS);
+    //printf("Nenhum tiro disponível! (MAX: %d)\n", MAX_BULLETS);
 }
 
 void FireBulletFromPlayer(BulletSystem *system, const Player *player)
@@ -137,7 +137,7 @@ void ClearBullets(BulletSystem *system)
         system->bullets[i].active = 0;
     }
     system->activeCount = 0;
-    printf("Todos os tiros foram limpos\n");
+    //printf("Todos os tiros foram limpos\n");
 }
 
 void DrawBullets(const BulletSystem *system)

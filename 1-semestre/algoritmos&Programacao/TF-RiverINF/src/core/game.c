@@ -57,7 +57,7 @@ static const char *ResolveMapPath(const char *name)
     }
 
     // Testa dentro da pasta de assets
-    snprintf(resolved, sizeof(resolved), "src/assets/maps/%s", name);
+    sn//printf(resolved, sizeof(resolved), "src/assets/maps/%s", name);
     if (FileExists(resolved))
     {
         return resolved;
@@ -110,19 +110,19 @@ void LoadCampaignLevel(Game *game, int level)
 
     if (level < 1 || level > game->totalLevels)
     {
-        printf("LoadCampaignLevel: nível inválido (%d)\n", level);
+        //printf("LoadCampaignLevel: nível inválido (%d)\n", level);
         return;
     }
 
     char path[256];
-    snprintf(path, sizeof(path),
+    sn//printf(path, sizeof(path),
              "src/assets/maps/fase%d.txt",
              level);
 
     game->isCustomLevel = 0;
     game->currentLevel = level;
 
-    printf("Carregando fase da campanha: %s\n", path);
+    //printf("Carregando fase da campanha: %s\n", path);
 
     LoadLevel(game, path);
 }
@@ -199,7 +199,7 @@ void AddCurrentScore(Game *game)
     // After saving, sanitize to keep UI safe
     SanitizeHighScores(game);
 
-    printf("Highscore salvo: %s - %d pontos\n", game->playerName, game->score);
+    //printf("Highscore salvo: %s - %d pontos\n", game->playerName, game->score);
 }
 
 /* ===== INICIALIZAÇÃO E RECURSOS ===== */
@@ -213,7 +213,7 @@ void LoadGameResources(Game *game)
     LoadHighScores(game->highScores);
     SanitizeHighScores(game);
 
-    printf("Recursos do jogo carregados\n");
+    //printf("Recursos do jogo carregados\n");
 }
 
 void UnloadGameResources(Game *game)
@@ -224,7 +224,7 @@ void UnloadGameResources(Game *game)
     UnloadPlayerTextures(&game->player);
     UnloadBulletSystem(&game->bulletSystem);
 
-    printf("Recursos do jogo descarregados\n");
+    //printf("Recursos do jogo descarregados\n");
 }
 
 void InitGame(Game *game)
@@ -277,10 +277,10 @@ void InitGame(Game *game)
     LoadHighScores(game->highScores);
     SanitizeHighScores(game);
 
-    printf("Sistema de jogo inicializado\n");
-    printf("Estado inicial: MENU\n");
-    printf("Total de níveis: %d\n", game->totalLevels);
-    printf("Tamanho da janela: %dx%d\n", game->windowWidth, game->windowHeight);
+    //printf("Sistema de jogo inicializado\n");
+    //printf("Estado inicial: MENU\n");
+    //printf("Total de níveis: %d\n", game->totalLevels);
+    //printf("Tamanho da janela: %dx%d\n", game->windowWidth, game->windowHeight);
 }
 
 void ResetGame(Game *game)
@@ -314,7 +314,7 @@ void ResetGame(Game *game)
     {
         game->player.fuel = 100.0f;
     }
-    printf("Jogo resetado\n");
+    //printf("Jogo resetado\n");
 }
 
 /* ===== CONTROLE DE ESTADO ===== */
@@ -324,7 +324,7 @@ void ChangeState(Game *game, GameState newState)
     if (!game)
         return;
 
-    printf("Mudando estado: %d -> %d\n", game->currentState, newState);
+    //printf("Mudando estado: %d -> %d\n", game->currentState, newState);
     game->currentState = newState;
 
     switch (newState)
@@ -388,7 +388,7 @@ void LoadLevel(Game *game, const char *levelFile)
     if (!game || !levelFile)
         return;
 
-    printf("Carregando nível: %s\n", levelFile);
+    //printf("Carregando nível: %s\n", levelFile);
 
     // Limpa sistemas
     ClearBullets(&game->bulletSystem);
@@ -415,7 +415,7 @@ void LoadLevel(Game *game, const char *levelFile)
     if (game->player.lives <= 0)
         game->player.lives = 3; // fallback
 
-    printf("Obstáculos carregados: %d\n", GetActiveObstacleCount(&game->obstacleSystem));
+    //printf("Obstáculos carregados: %d\n", GetActiveObstacleCount(&game->obstacleSystem));
 }
 
 void LoadCustomLevel(Game *game, const char *filename)
@@ -433,7 +433,7 @@ void LoadCustomLevel(Game *game, const char *filename)
 
     if (!ValidateMapFile(resolved))
     {
-        printf("Nível personalizado inválido (ValidateMapFile falhou): %s (resolvido: %s)\n",
+        //printf("Nível personalizado inválido (ValidateMapFile falhou): %s (resolvido: %s)\n",
                filename, resolved);
         ChangeState(game, MENU);
         return;
@@ -453,7 +453,7 @@ void LoadCustomLevel(Game *game, const char *filename)
     game->player.y = (float)(SCREEN_HEIGHT - 40);
     game->player.active = 1;
 
-    printf("Nível personalizado carregado: %s (resolvido: %s)\n", filename, resolved);
+    //printf("Nível personalizado carregado: %s (resolvido: %s)\n", filename, resolved);
 }
 
 /* ===== ATUALIZAÇÃO DO JOGO ===== */
@@ -473,7 +473,7 @@ void UpdateGameplay(Game *game)
     if (pointsEarned > 0)
     {
         game->score += pointsEarned;
-        printf("+%d pontos! Total: %d\n", pointsEarned, game->score);
+        //printf("+%d pontos! Total: %d\n", pointsEarned, game->score);
     }
 
     if (!game->godMode)
@@ -483,14 +483,14 @@ void UpdateGameplay(Game *game)
 
     if (!game->player.active && !game->godMode)
     {
-        printf("Jogador morreu! Pontuação: %d\n", game->score);
+        //printf("Jogador morreu! Pontuação: %d\n", game->score);
         ChangeState(game, GAME_OVER);
         return;
     }
 
     if (game->player.fuel <= 0 && !game->godMode)
     {
-        printf("Combustível acabou! Pontuação: %d\n", game->score);
+        //printf("Combustível acabou! Pontuação: %d\n", game->score);
         ChangeState(game, GAME_OVER);
         return;
     }
@@ -504,7 +504,7 @@ void UpdateGameplay(Game *game)
             if (timeBonus > 0)
             {
                 game->score += timeBonus;
-                printf("Bônus de tempo: +%d pontos\n", timeBonus);
+                //printf("Bônus de tempo: +%d pontos\n", timeBonus);
             }
 
             LoadNextLevel(game);
@@ -597,7 +597,7 @@ void ProcessMenuInput(Game *game)
             ChangeState(game, HIGHSCORE);
             break;
         case 3: // Sair
-            printf("Saindo do jogo (menu)...\n");
+            //printf("Saindo do jogo (menu)...\n");
             CloseWindow();
             break;
         }
@@ -613,7 +613,7 @@ void ProcessMenuInput(Game *game)
     else if (IsKeyPressed(KEY_ESCAPE))
     {
         // Fecha a janela quando ESC no menu
-        printf("Saindo do jogo (ESC)...\n");
+        //printf("Saindo do jogo (ESC)...\n");
         CloseWindow();
     }
     else if (IsKeyPressed(KEY_HOME) || IsKeyPressed(KEY_F11))
@@ -641,13 +641,13 @@ void ProcessGameplayInput(Game *game)
     if (IsKeyPressed(KEY_F))
     {
         Refuel(&game->player, 30.0f);
-        printf("Reabastecido! Combustível: %.0f\n", game->player.fuel);
+        //printf("Reabastecido! Combustível: %.0f\n", game->player.fuel);
     }
 
     if (IsKeyPressed(KEY_H))
     {
         game->showHitboxes = !game->showHitboxes;
-        printf("Hitboxes: %s\n", game->showHitboxes ? "ON" : "OFF");
+        //printf("Hitboxes: %s\n", game->showHitboxes ? "ON" : "OFF");
     }
 
     if (IsKeyPressed(KEY_I))
@@ -655,7 +655,7 @@ void ProcessGameplayInput(Game *game)
         game->godMode = !game->godMode;
         game->player.invincible = game->godMode;
         game->player.invincibleTimer = game->godMode ? 9999.0f : 0;
-        printf("God mode: %s\n", game->godMode ? "ON" : "OFF");
+        //printf("God mode: %s\n", game->godMode ? "ON" : "OFF");
     }
 
     if (IsKeyPressed(KEY_ESCAPE))
@@ -898,7 +898,7 @@ void UpdateWindowSize(Game *game, int width, int height)
     if (game->scaleFactor > 2.0f)
         game->scaleFactor = 2.0f;
 
-    printf("Janela redimensionada: %dx%d (Escala: %.2f)\n",
+    //printf("Janela redimensionada: %dx%d (Escala: %.2f)\n",
            width, height, game->scaleFactor);
 }
 

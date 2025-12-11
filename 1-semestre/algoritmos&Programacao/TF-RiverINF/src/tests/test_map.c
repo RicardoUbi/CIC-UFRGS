@@ -44,16 +44,16 @@ int main(void)
     
     // Se não encontrar na pasta assets, tenta na raiz
     if (mapa.height == 0) {
-        printf("Tentando carregar da pasta raiz...\n");
+        //printf("Tentando carregar da pasta raiz...\n");
         LoadMap(&mapa, "fase1.txt");
     }
     
-    printf("Mapa carregado: %d linhas\n", mapa.height);
-    printf("Primeira linha: ");
+    //printf("Mapa carregado: %d linhas\n", mapa.height);
+    //printf("Primeira linha: ");
     for (int i = 0; i < 24; i++) {
-        printf("%c", mapa.data[0][i]);
+        //printf("%c", mapa.data[0][i]);
     }
-    printf("\n");
+    //printf("\n");
     
     // Loop principal
     while (!WindowShouldClose())
@@ -79,6 +79,6 @@ int main(void)
     
     // Encerra
     CloseWindow();
-    printf("Teste finalizado\n");
+    //printf("Teste finalizado\n");
     return 0;
 }
