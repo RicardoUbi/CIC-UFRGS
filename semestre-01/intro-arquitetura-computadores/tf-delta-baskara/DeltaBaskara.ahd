@@ -1,0 +1,187 @@
+; INICIO DO PROGRAMA
+
+START:
+        ; inicializa temporários
+        LDA ZERO
+        STA T1x
+        STA T1y
+        STA T2x
+        STA T2y
+        STA CNT1
+        STA CNT2
+
+; Calcular B*B -> T1x:T1y
+; multiplicação por soma repetida (T1 = 0; repetir B vezes: T1 += B)
+        ; T1 = 0
+        LDA ZERO
+        STA T1x
+        STA T1y
+
+        ; CNT1 = B (contador)
+        LDA B
+        STA CNT1
+
+MULT_B_SQ_LOOP:
+        LDA CNT1
+        JZ END_MULT_B_SQ    ; se CNT1 == 0 pula
+
+        ; T1y = T1y + B
+        LDA T1y
+        ADD B
+        STA T1y
+        ; se houve carry, incrementa T1x
+        JC INC_T1X_FROM_LO
+
+        JMP SKIP_INC_T1X_FROM_LO
+INC_T1X_FROM_LO:
+        LDA T1x
+        ADD UM
+        STA T1x
+SKIP_INC_T1X_FROM_LO:
+
+        ; CNT1 = CNT1 - 1
+        LDA CNT1
+        SUB UM
+        STA CNT1
+
+        JMP MULT_B_SQ_LOOP
+END_MULT_B_SQ:
+
+;  Calcular A*C -> T2x:T2y
+        ; T2 = 0
+        LDA ZERO
+        STA T2x
+        STA T2y
+
+        ; CNT2 = C
+        LDA C
+        STA CNT2
+
+MULT_AC_LOOP:
+        LDA CNT2
+        JZ END_MULT_AC
+
+        ; T2y = T2y + A
+        LDA T2y
+        ADD A
+        STA T2y
+        ; se houve carry, incrementa T2x
+        JC INC_T2X_FROM_LO
+
+        JMP SKIP_INC_T2X_FROM_LO
+INC_T2X_FROM_LO:
+        LDA T2x
+        ADD UM
+        STA T2x
+SKIP_INC_T2X_FROM_LO:
+
+        ; CNT2 = CNT2 - 1
+        LDA CNT2
+        SUB UM
+        STA CNT2
+
+        JMP MULT_AC_LOOP
+END_MULT_AC:
+
+; Multiplicar T2 por 4 -> SHL 2 sobre 16 bits
+        ; SHL #1
+        LDA T2y
+        SHL
+        STA T2y
+        LDA T2x
+        ROL
+        STA T2x
+
+        ; SHL #2
+        LDA T2y
+        SHL
+        STA T2y
+        LDA T2x
+        ROL
+        STA T2x
+
+; Agora T1 = B^2 ; T2 = 4*A*C
+
+; Calcular D = T1 - T2
+        LDA T1y
+        SUB T2y
+        STA Dy
+        ; se não houve borrow, JNB vai pular
+        JNB NO_BORROW_LOW
+
+        ; houve borrow => Dx = T1x - T2x - 1
+        LDA T1x
+        SUB T2x
+        SUB UM
+        STA Dx
+        JMP AFTER_SUB16
+
+ORG 143
+NO_BORROW_LOW:
+        ; sem borrow => Dx = T1x - T2x
+        LDA T1x
+        SUB T2x
+        STA Dx
+
+AFTER_SUB16:
+
+; Determinar R:
+;    - se D < 0 -> R = 0
+;    - se D == 0 -> R = 1
+;    - se D > 0 -> R = 2
+
+        ; Se Dx < 0 => R = 0
+        LDA Dx
+        JN SET_R_ZERO    ; se negativo
+
+        ; Se Dx == 0, então depende de Dy
+        JZ CHECK_DY_ZERO  ; (JZ testa AC==0 após LDA Dx)
+
+        ; aqui Dx != 0 e não negativo => positivo
+        LDA DOIS
+        STA R
+        JMP END_OK
+
+CHECK_DY_ZERO:
+        ; Dx == 0 -> verificar Dy
+        LDA Dy
+        JZ SET_R_ONE     ; Dy == 0 -> R = 1
+        LDA DOIS
+        STA R
+        JMP END_OK
+
+SET_R_ZERO:
+        LDA ZERO
+        STA R
+        JMP END_OK
+
+SET_R_ONE:
+        LDA UM
+        STA R
+        JMP END_OK
+
+END_OK:
+        HLT
+
+; DADOS / VARIÁVEIS
+ORG 128
+A:      DB 0
+B:      DB 0
+C:      DB 0
+Dx:     DB 0
+Dy:     DB 0
+R:      DB 0
+
+; temporários
+T1x:    DB 0
+T1y:    DB 0
+T2x:    DB 0
+T2y:    DB 0
+
+CNT1:   DB 0
+CNT2:   DB 0
+
+; constantes
+ZERO:   DB 0
+UM:     DB 1
+DOIS:   DB 2
